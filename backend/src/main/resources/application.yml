@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: ticketing-backend
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ticketing}
+    username: ${DB_USER:ticketing}
+    password: ${DB_PASSWORD:ticketing}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      embedding:
+        options:
+          model: text-embedding-3-small
+      chat:
+        options:
+          model: gpt-4o-mini
+    vectorstore:
+      pgvector:
+        initialize-schema: false
+        table-name: knowledge_embeddings
+        dimensions: 1536
+        distance-type: COSINE_DISTANCE
+        index-type: HNSW
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  rag:
+    retrieval:
+      top-k: ${APP_RAG_RETRIEVAL_TOP_K:5}
+      similarity-threshold: ${APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD:0.75}
+    no-match-message: "I could not find any relevant tickets in our history that answer this question."
+    indexing:
+      max-retries: 3
+      poll-interval-ms: 2000

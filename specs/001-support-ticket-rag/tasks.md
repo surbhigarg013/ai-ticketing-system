@@ -30,15 +30,15 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 **Purpose**: Initialize backend and frontend projects per plan.md structure
 
-- [ ] T001 Create backend Maven project structure in `backend/` with `pom.xml` (Java 21, Spring Boot 3.5.x parent, Spring AI 1.1.x BOM)
-- [ ] T002 Add backend dependencies in `backend/pom.xml`: spring-boot-starter-web, spring-boot-starter-data-jpa, spring-boot-starter-validation, liquibase-core, mapstruct, lombok, springdoc-openapi, spring-ai-starter-vector-store-pgvector, spring-ai-starter-model-openai, spring-boot-starter-actuator
-- [ ] T003 [P] Create Spring Boot entry point `backend/src/main/java/com/ticketing/Application.java`
-- [ ] T004 [P] Create frontend Vite + React 19 + TypeScript project in `frontend/` with `package.json` and `vite.config.ts`
-- [ ] T005 [P] Configure frontend dev proxy to backend in `frontend/vite.config.ts` (`/api` → `http://localhost:8080`)
-- [ ] T006 [P] Add Maven wrapper `backend/mvnw` and `backend/.mvn/wrapper/maven-wrapper.properties`
-- [ ] T007 [P] Create `docker-compose.yml` at repo root with `pgvector/pgvector:pg16` service (db: ticketing, port 5432)
-- [ ] T008 [P] Create backend package directories: `ticket/`, `rag/`, `shared/` under `backend/src/main/java/com/ticketing/`
-- [ ] T009 [P] Create frontend feature directories: `frontend/src/features/tickets/`, `frontend/src/features/assistant/`, `frontend/src/shared/`
+- [X] T001 Create backend Maven project structure in `backend/` with `pom.xml` (Java 21, Spring Boot 3.5.x parent, Spring AI 1.1.x BOM)
+- [X] T002 Add backend dependencies in `backend/pom.xml`: spring-boot-starter-web, spring-boot-starter-data-jpa, spring-boot-starter-validation, liquibase-core, mapstruct, lombok, springdoc-openapi, spring-ai-starter-vector-store-pgvector, spring-ai-starter-model-openai, spring-boot-starter-actuator
+- [X] T003 [P] Create Spring Boot entry point `backend/src/main/java/com/ticketing/Application.java`
+- [X] T004 [P] Create frontend Vite + React 19 + TypeScript project in `frontend/` with `package.json` and `vite.config.ts`
+- [X] T005 [P] Configure frontend dev proxy to backend in `frontend/vite.config.ts` (`/api` → `http://localhost:8080`)
+- [X] T006 [P] Add Maven wrapper `backend/mvnw` and `backend/.mvn/wrapper/maven-wrapper.properties`
+- [X] T007 [P] Create `docker-compose.yml` at repo root with `pgvector/pgvector:pg16` service (db: ticketing, port 5432)
+- [X] T008 [P] Create backend package directories: `ticket/`, `rag/`, `shared/` under `backend/src/main/java/com/ticketing/`
+- [X] T009 [P] Create frontend feature directories: `frontend/src/features/tickets/`, `frontend/src/features/assistant/`, `frontend/src/shared/`
 
 ---
 
@@ -48,19 +48,19 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T010 Create Liquibase master changelog `backend/src/main/resources/db/changelog/db.changelog-master.yaml`
-- [ ] T011 [P] Add changeset `backend/src/main/resources/db/changelog/changes/001-extensions.sql` (`CREATE EXTENSION IF NOT EXISTS vector`)
-- [ ] T012 [P] Add changeset `backend/src/main/resources/db/changelog/changes/002-ticket-tables.sql` (ticket table: `id` UUID PK, `display_id` VARCHAR(20) UNIQUE NOT NULL, `title` VARCHAR(200) NOT NULL, `description` TEXT NOT NULL, `status` ENUM default OPEN, `priority` ENUM NOT NULL, `assignee` VARCHAR(100) nullable, `category` ENUM NOT NULL default GENERAL, `resolution` TEXT nullable, `created_at`/`updated_at` TIMESTAMPTZ NOT NULL; comment table: `id` UUID PK, `ticket_id` UUID FK NOT NULL, `content` TEXT NOT NULL, `author` VARCHAR(100) NOT NULL, `created_at` TIMESTAMPTZ NOT NULL; display_id sequence)
-- [ ] T013 [P] Add changeset `backend/src/main/resources/db/changelog/changes/003-knowledge-tables.sql` (knowledge_document + indexing_job tables per data-model.md with unique constraint on `(ticket_id, content_type, source_ref_id)`)
-- [ ] T014 [P] Add changeset `backend/src/main/resources/db/changelog/changes/004-search-indexes.sql` (indexes on status, priority, category; GIN/trigram on title + description)
-- [ ] T015 [P] Add changeset `backend/src/main/resources/db/changelog/changes/005-vector-table.sql` (knowledge_embeddings PGVector table, HNSW index, 1536 dimensions, COSINE_DISTANCE)
-- [ ] T016 Configure datasource and Liquibase in `backend/src/main/resources/application.yml` (PostgreSQL URL, `spring.liquibase.change-log`, `spring.ai.vectorstore.pgvector.initialize-schema: false`)
+- [X] T010 Create Liquibase master changelog `backend/src/main/resources/db/changelog/db.changelog-master.yaml`
+- [X] T011 [P] Add changeset `backend/src/main/resources/db/changelog/changes/001-extensions.sql` (`CREATE EXTENSION IF NOT EXISTS vector`)
+- [X] T012 [P] Add changeset `backend/src/main/resources/db/changelog/changes/002-ticket-tables.sql` (ticket table: `id` UUID PK, `display_id` VARCHAR(20) UNIQUE NOT NULL, `title` VARCHAR(200) NOT NULL, `description` TEXT NOT NULL, `status` ENUM default OPEN, `priority` ENUM NOT NULL, `assignee` VARCHAR(100) nullable, `category` ENUM NOT NULL default GENERAL, `resolution` TEXT nullable, `created_at`/`updated_at` TIMESTAMPTZ NOT NULL; comment table: `id` UUID PK, `ticket_id` UUID FK NOT NULL, `content` TEXT NOT NULL, `author` VARCHAR(100) NOT NULL, `created_at` TIMESTAMPTZ NOT NULL; display_id sequence)
+- [X] T013 [P] Add changeset `backend/src/main/resources/db/changelog/changes/003-knowledge-tables.sql` (knowledge_document + indexing_job tables per data-model.md with unique constraint on `(ticket_id, content_type, source_ref_id)`)
+- [X] T014 [P] Add changeset `backend/src/main/resources/db/changelog/changes/004-search-indexes.sql` (indexes on status, priority, category; GIN/trigram on title + description)
+- [X] T015 [P] Add changeset `backend/src/main/resources/db/changelog/changes/005-vector-table.sql` (knowledge_embeddings PGVector table, HNSW index, 1536 dimensions, COSINE_DISTANCE)
+- [X] T016 Configure datasource and Liquibase in `backend/src/main/resources/application.yml` (PostgreSQL URL, `spring.liquibase.change-log`, `spring.ai.vectorstore.pgvector.initialize-schema: false`)
 - [ ] T017 [P] Create `RagProperties` config record in `backend/src/main/java/com/ticketing/shared/config/RagProperties.java` (`top-k`, `similarity-threshold`, `no-match-message`, indexing retry settings bound to `app.rag.*` env vars)
 - [ ] T018 [P] Create OpenAPI config in `backend/src/main/java/com/ticketing/shared/config/OpenApiConfig.java` (title, version, `/api/v1` base)
 - [ ] T019 Create `GlobalExceptionHandler` in `backend/src/main/java/com/ticketing/shared/exception/GlobalExceptionHandler.java` (problem+json for 400 validation, 404 not found, 409 state conflict, 500 generic)
 - [ ] T020 [P] Create domain exception types in `backend/src/main/java/com/ticketing/shared/exception/` (`ResourceNotFoundException`, `InvalidStateTransitionException`, `ValidationException`)
-- [ ] T021 [P] Create ticket enums in `backend/src/main/java/com/ticketing/ticket/domain/` (`TicketStatus`: OPEN, IN_PROGRESS, RESOLVED, CLOSED, CANCELLED; `Priority`: LOW, MEDIUM, HIGH; `Category`: PAYMENT, SHIPMENT, ACCOUNT, GENERAL)
-- [ ] T022 Create `TicketChangedEvent` record in `backend/src/main/java/com/ticketing/ticket/event/TicketChangedEvent.java` (ticketId, trigger enum: CREATE, UPDATE, COMMENT_ADD, COMMENT_UPDATE, COMMENT_DELETE, STATUS_CHANGE)
+- [X] T021 [P] Create ticket enums in `backend/src/main/java/com/ticketing/ticket/domain/` (`TicketStatus`: OPEN, IN_PROGRESS, RESOLVED, CLOSED, CANCELLED; `Priority`: LOW, MEDIUM, HIGH; `Category`: PAYMENT, SHIPMENT, ACCOUNT, GENERAL)
+- [X] T022 Create `TicketChangedEvent` record in `backend/src/main/java/com/ticketing/ticket/event/TicketChangedEvent.java` (ticketId, trigger enum: CREATE, UPDATE, COMMENT_ADD, COMMENT_UPDATE, COMMENT_DELETE, STATUS_CHANGE)
 - [ ] T023 [P] Create frontend API client in `frontend/src/shared/api/client.ts` (fetch wrapper, problem+json parser, base URL `/api/v1`)
 - [ ] T024 [P] Create shared UI components in `frontend/src/shared/components/ErrorBanner.tsx` and `frontend/src/shared/components/LoadingSpinner.tsx`
 - [ ] T025 Create app router shell in `frontend/src/app/App.tsx` and `frontend/src/app/router.tsx` (routes: `/tickets`, `/tickets/new`, `/tickets/:id`, `/assistant`; layout with nav links)
@@ -77,10 +77,10 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 ### Implementation for User Story 1
 
-- [ ] T026 [P] [US1] Create JPA `Ticket` entity in `backend/src/main/java/com/ticketing/ticket/domain/Ticket.java` (fields per data-model.md; `title` VARCHAR(200) trimmed non-empty; `status` default OPEN; `category` default GENERAL)
-- [ ] T027 [P] [US1] Create JPA `Comment` entity in `backend/src/main/java/com/ticketing/ticket/domain/Comment.java` (`content` TEXT non-blank, `author` VARCHAR(100) NOT NULL, `created_at` TIMESTAMPTZ)
-- [ ] T028 [US1] Create `TicketRepository` in `backend/src/main/java/com/ticketing/ticket/repository/TicketRepository.java` (JpaRepository + display_id sequence query)
-- [ ] T029 [US1] Create `CommentRepository` in `backend/src/main/java/com/ticketing/ticket/repository/CommentRepository.java`
+- [X] T026 [P] [US1] Create JPA `Ticket` entity in `backend/src/main/java/com/ticketing/ticket/domain/Ticket.java` (fields per data-model.md; `title` VARCHAR(200) trimmed non-empty; `status` default OPEN; `category` default GENERAL)
+- [X] T027 [P] [US1] Create JPA `Comment` entity in `backend/src/main/java/com/ticketing/ticket/domain/Comment.java` (`content` TEXT non-blank, `author` VARCHAR(100) NOT NULL, `created_at` TIMESTAMPTZ)
+- [X] T028 [US1] Create `TicketRepository` in `backend/src/main/java/com/ticketing/ticket/repository/TicketRepository.java` (JpaRepository + display_id sequence query)
+- [X] T029 [US1] Create `CommentRepository` in `backend/src/main/java/com/ticketing/ticket/repository/CommentRepository.java`
 - [ ] T030 [P] [US1] Create request/response DTO records in `backend/src/main/java/com/ticketing/ticket/api/` (`CreateTicketRequest`, `TicketSummary`, `TicketDetail`, `CommentDto`, `TicketPage` per contracts/tickets-api.yaml)
 - [ ] T031 [US1] Create MapStruct mapper `TicketMapper` in `backend/src/main/java/com/ticketing/ticket/api/TicketMapper.java`
 - [ ] T032 [US1] Implement `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (create with display_id generation TKT-NNNN, list paginated, getById with comments chronological; publish `TicketChangedEvent` on create)
