@@ -1,0 +1,61 @@
+---
+description: RAG retrieval, PGVector indexing, and grounded answers
+globs: "**/*{Rag,Vector,Embedding,Index,Retriev}*.java,**/rag/**,**/vector/**"
+alwaysApply: false
+---
+
+# RAG & Vector Store
+
+## Grounding (non-negotiable)
+
+- **Retrieved ticket context** is the only support-domain knowledge source for answers.
+- Do not inject general model knowledge, static prompts with ticket facts, or uncited assumptions.
+- Every answer MUST return **source ticket ID(s)** that supported the response.
+- If retrieval returns no tickets above threshold, respond with an explicit **no relevant tickets** message — never guess or fabricate.
+
+## Retrieval parameters
+
+Externalize all tuning via config (`application.yml`, env vars, or `@ConfigurationProperties`):
+
+| Parameter | Requirement |
+|-----------|-------------|
+| `top-k` | Max chunks/documents retrieved |
+| Similarity threshold | Minimum score to include a hit |
+| Embedding model id | Model name/version in use |
+
+No hard-coded magic numbers in service code. Document defaults and valid ranges in `plan.md` or README.
+
+## Indexing & refresh
+
+- Store vectors in **PostgreSQL + PGVector**; ticket rows remain source of truth.
+- **Re-embed and re-index** after ticket mutations that affect searchable content:
+  - create, update, delete
+  - status or field changes included in the indexed payload
+- Indexing MUST be idempotent; failed refresh MUST be retried or surfaced for ops.
+- Do not serve stale embeddings when ticket content has changed.
+
+## Chunking & embeddings
+
+- Chunking strategy (size, overlap, field boundaries) and embedding model choice MUST be **documented and justified** in the feature plan before implementation.
+- Prefer ticket-level or section-level chunks that preserve ticket ID linkage on every chunk.
+- Each stored chunk MUST retain `ticketId` (and chunk metadata) for citation and filtering.
+- Record embedding model version when re-indexing so upgrades trigger backfill.
+
+## API response shape
+
+RAG endpoints MUST include at minimum:
+
+```json
+{
+  "answer": "...",
+  "sourceTicketIds": ["uuid-1", "uuid-2"],
+  "retrievalEmpty": false
+}
+```
+
+When `retrievalEmpty` is true, `answer` explains that no relevant tickets were found.
+
+## Testing
+
+- Cover: hits above threshold, below threshold, empty index, post-mutation refresh.
+- Assert cited IDs match retrieved chunks only; no answer without sources when `retrievalEmpty` is false.

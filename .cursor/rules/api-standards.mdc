@@ -1,0 +1,73 @@
+---
+description: REST API design and HTTP conventions
+globs: "**/*Controller.java,**/api/**"
+alwaysApply: false
+---
+
+# REST API Standards
+
+## URLs & resources
+
+- Use **nouns**, not verbs: `/tickets`, `/tickets/{id}`.
+- Prefer **plural** resource names.
+- Nest only for true ownership: `/tickets/{id}/comments`.
+- Use **kebab-case** in path segments when multi-word.
+- Base path: `/api/v1/...` for versioned public API.
+
+## HTTP methods
+
+| Method | Use |
+|--------|-----|
+| `GET` | Read; safe, idempotent |
+| `POST` | Create; non-idempotent |
+| `PUT` | Full replace of a resource |
+| `PATCH` | Partial update |
+| `DELETE` | Remove; idempotent |
+
+Do not use `GET` for actions that change state.
+
+## Status codes
+
+| Code | When |
+|------|------|
+| `200` | Success with body |
+| `201` | Resource created (`Location` header) |
+| `204` | Success, no body (e.g. delete) |
+| `400` | Malformed request or Bean Validation failure |
+| `404` | Resource not found |
+| `409` | Conflict (e.g. invalid state transition) |
+| `422` | Semantically invalid but well-formed (optional; prefer `400` or `409` consistently) |
+| `500` | Unexpected server error (no internal details in body) |
+
+Use the correct code; do not return `200` with an error payload.
+
+## Request & response
+
+- Request/response body: **JSON** (`application/json`).
+- Use **camelCase** for JSON property names.
+- Accept `Content-Type: application/json` on bodies; validate with `@Valid` on input DTOs.
+- Do not expose JPA entities; return DTOs/records only.
+- Omit null fields in responses when configured (`NON_NULL`).
+
+## Errors (RFC 9457)
+
+All error responses use `application/problem+json` via `ProblemDetail`:
+
+- `type`, `title`, `status`, `detail`, `instance`
+- Optional `errors` array for field-level validation (`field`, `message`)
+
+One global exception handler; consistent shape across endpoints.
+
+## Lists & pagination
+
+- Collection `GET` returns `{ "items": [...], "page": 0, "size": 20, "total": N }` (or Spring `Page` mapped consistently).
+- Support `page`, `size`, and `sort` query params; cap `size` server-side.
+- Document filter query params; use explicit names (`status`, `assigneeId`).
+
+## Conventions
+
+- **Idempotency**: `PUT` and `DELETE` safe to retry; `POST` creates new resources each time unless idempotency key is added later.
+- **Timestamps**: ISO-8601 UTC (`2025-09-25T12:00:00Z`).
+- **IDs**: opaque strings or UUIDs in URLs; no sequential IDs in docs if security-sensitive.
+- **Auth**: document required headers; return `401` / `403` with problem+json, not empty bodies.
+- Prefer **OpenAPI** (springdoc) as the contract source; keep annotations in sync with controllers.

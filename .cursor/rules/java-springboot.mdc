@@ -1,0 +1,51 @@
+---
+description: Java 21 and Spring Boot backend conventions
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# Java & Spring Boot
+
+## Stack & structure
+
+- Target **Java 21** and idiomatic **Spring Boot** (and Spring AI where used).
+- Follow **SOLID**; keep modules focused (controller, service, repository, domain).
+- Use **constructor injection** only; no field injection.
+- Prefer **records** for immutable DTOs, request/response payloads, and value objects.
+- Use **MapStruct** for entity/DTO mapping; **Lombok** only for boilerplate on mutable types.
+- Schema changes via **Liquibase**; no ad-hoc DDL in application code.
+
+## Layers
+
+| Layer | Responsibility |
+|-------|----------------|
+| Controller | HTTP mapping, status codes, delegate to service |
+| Service | Business logic, validation orchestration, **transactions** |
+| Repository | Persistence only |
+
+- Annotate transactional methods at the **service** layer (`@Transactional` on services, not controllers or repositories).
+- Controllers stay thin: no business rules, no direct repository access.
+
+## Validation
+
+- Use **Bean Validation** (`@Valid`, `@NotNull`, `@Size`, etc.) on request DTOs.
+- Enforce domain rules (e.g. ticket state transitions) in the **service** layer, not controllers.
+- Return **400** for validation failures; **409** for invalid state transitions.
+
+## API errors (RFC 9457)
+
+Return `application/problem+json` for errors. Include at minimum:
+
+- `type` — stable URI or identifier for the problem
+- `title` — short human-readable summary
+- `status` — HTTP status code
+- `detail` — specific explanation (safe for clients; no stack traces)
+- `instance` — request path or correlation id
+
+Use a single `@ControllerAdvice` / `ProblemDetail` handler; map exceptions consistently.
+
+## Style
+
+- No unnecessary abstractions: no extra interfaces, factories, or wrapper layers without clear reuse.
+- Prefer clarity over patterns; extract only when duplication or testing demands it.
+- Match existing package and naming conventions in the repo.

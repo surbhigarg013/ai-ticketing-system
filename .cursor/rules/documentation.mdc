@@ -1,0 +1,54 @@
+---
+description: Concise, accurate, and current project documentation
+globs: "**/*.{md,mdx}"
+alwaysApply: false
+---
+
+# Documentation
+
+## Principles
+
+- Documentation MUST be **concise**: short sentences, no filler, no duplicated code comments.
+- Documentation MUST stay **current**: update docs in the same change that alters behavior, APIs, or setup.
+- Prefer **official framework documentation** when citing external behavior (Spring, React, PostgreSQL, etc.).
+- Do not document what the code already states clearly; document **why** and **non-obvious constraints**.
+
+## What to maintain
+
+| Artifact | Purpose |
+|----------|---------|
+| `README.md` | Quick start, prerequisites, run/test commands, env vars (names only, no secrets) |
+| OpenAPI / springdoc | Live API contract; must match controllers |
+| `.specify/` specs (`spec.md`, `plan.md`, `tasks.md`) | Feature intent before implementation |
+| `constitution.md` | Project governance; amend when principles change |
+| Liquibase changelogs | Schema history; include brief change comment per migration |
+
+## Style
+
+- Use imperative headings: "Run tests", not "How to run tests".
+- One topic per section; link to official docs for deep reference instead of copying them.
+- Examples MUST be copy-pasteable and verified against the current codebase.
+- Use tables and lists only when they reduce length; avoid narrative duplication of code.
+- No committed secrets, tokens, or real credentials in any doc.
+
+## When code changes
+
+Update documentation if the change affects any of:
+
+- Public API paths, request/response shapes, or status codes
+- Environment variables or local setup steps
+- Business rules, state machine, or RAG behavior described for users/operators
+- Dependencies, versions, or required tools
+
+If behavior changes but docs do not, treat the PR as incomplete.
+
+## Comments in code
+
+- Java: Javadoc only on public APIs and complex domain rules; skip getters/setters and obvious DTOs.
+- TypeScript: TSDoc only where types alone are insufficient.
+- Never leave `TODO` in docs without an owner or linked task; remove obsolete TODOs when done.
+
+## Out of scope
+
+- Do not add markdown files the user did not ask for (no drive-by READMEs or design docs).
+- Do not paste full tutorials; link to authoritative sources.

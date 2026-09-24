@@ -1,0 +1,49 @@
+---
+description: Test coverage, conditional flows, and quality gates
+globs: "**/*.{java,ts,tsx}"
+alwaysApply: false
+---
+
+# Testing
+
+## Coverage target
+
+- Maintain **≥ 85% line coverage** on non-POJO code (services, controllers, domain logic, utilities, React components/hooks).
+- **Exclude from coverage**: POJOs — DTOs, records used only as data carriers, JPA entities with no behavior, MapStruct mappers, Lombok-only types, and pure config classes.
+- New or changed logic MUST not lower coverage below the threshold; add tests with the change.
+
+## What to test
+
+Cover **all major conditional flows**:
+
+- Happy path and primary error paths
+- Validation failures (Bean Validation and domain rules)
+- Ticket **state machine**: every allowed transition, every rejected transition, edge cases
+- RAG: answers cite ticket IDs, use only retrieved context, explicit response when no relevant tickets
+- API layer: status codes and RFC 9457 problem responses for error cases
+- Frontend: form validation, error states, loading/empty states for user-facing flows
+
+## Backend (Java / Spring Boot)
+
+| Type | Use for |
+|------|---------|
+| Unit tests | Service logic, state machine, validators (mock dependencies) |
+| `@WebMvcTest` | Controller contract, status codes, problem+json shape |
+| `@DataJpaTest` | Repository queries when logic is non-trivial |
+| Integration tests | Critical end-to-end paths (optional; prefer focused tests) |
+
+- Name tests by behavior: `shouldRejectTransitionWhenTicketClosed`.
+- One assertion theme per test; use clear Given/When/Then structure.
+- No tests that only assert mocks were called with no behavior check.
+
+## Frontend (React / TypeScript)
+
+- Use **Vitest** (or project default) + React Testing Library.
+- Test user-visible outcomes, not implementation details.
+- Cover validation messages, disabled submit, and error display on failed API calls.
+
+## CI & changes
+
+- Run the full test suite before merge.
+- Bug fixes MUST include a regression test when feasible.
+- Do not merge with failing tests or coverage below 85% on in-scope code.
