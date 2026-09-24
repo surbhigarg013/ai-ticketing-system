@@ -18,6 +18,14 @@
 - Q: Which ticket changes must trigger re-indexing of knowledge documents? → A: Re-embed on searchable text change; metadata-only changes update unit metadata without re-embedding.
 - Q: When retrieval finds no relevant tickets, what must the assistant response contain? → A: Fixed no-match message in answer; sources is an empty array.
 
+### Session 2026-09-25
+
+- Q: In each assistant `sources` entry, should `ticketId` be the internal UUID, the human-readable display ID, or both? → A: Both fields: `ticketId` (UUID for navigation/API) and `displayId` (e.g. TKT-1001 for human-readable citation).
+- Q: After a comment is added to a ticket, can agents edit or delete that comment in v1? → A: Add-only — comments cannot be edited or deleted after creation.
+- Q: Can support agents delete tickets in v1? → A: No delete — tickets are permanent once created; use CANCELLED status to abandon.
+- Q: Must v1 include automated tests for the state machine and RAG grounding before the feature is considered complete? → A: Yes — automated tests required for state machine, RAG grounding/citations, and core API flows before v1 is done.
+- Q: When creating a ticket, must the agent select a category, or should category default when omitted? → A: Optional — defaults to GENERAL when not specified on create.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Create and Track Support Tickets (Priority: P1)
@@ -107,8 +115,8 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 
 **Acceptance Scenarios**:
 
-1. **Given** indexed tickets about payment failures, **When** an agent asks "Have we seen payment failures before?", **Then** the system returns an answer grounded in matching ticket content and cites the specific ticket ID(s) used.
-2. **Given** a resolved ticket TKT-1001 with resolution notes, **When** an agent asks "What was the resolution for ticket TKT-1001?", **Then** the system returns the resolution from that ticket and cites TKT-1001.
+1. **Given** indexed tickets about payment failures, **When** an agent asks "Have we seen payment failures before?", **Then** the system returns an answer grounded in matching ticket content and cites the specific ticket(s) in `sources` with both `ticketId` (UUID) and `displayId`.
+2. **Given** a resolved ticket TKT-1001 with resolution notes, **When** an agent asks "What was the resolution for ticket TKT-1001?", **Then** the system returns the resolution from that ticket and cites it in `sources` with `displayId` TKT-1001 and the corresponding `ticketId` UUID.
 3. **Given** no tickets relate to the question topic, **When** an agent asks an in-domain support question with no matches, **Then** the system returns a fixed no-match message in `answer`, an empty `sources` array, and no fabricated ticket facts.
 4. **Given** a ticket is updated with new comments or resolution notes, **When** an agent asks a question about that content, **Then** the answer reflects the latest ticket information.
 
@@ -132,6 +140,8 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 - What happens when retrieval finds marginally related tickets below the relevance threshold? System returns a fixed no-match message in `answer` and an empty `sources` array rather than producing a weak or speculative answer.
 - What happens when an agent attempts a skipped lifecycle step (e.g., OPEN directly to RESOLVED)? System rejects the transition.
 - What happens when an agent transitions to RESOLVED with an empty or whitespace-only resolution field? System rejects the transition with a validation error.
+- What happens when an agent attempts to edit or delete an existing comment? Not supported in v1; no edit/delete comment API or UI is provided.
+- What happens when an agent attempts to delete a ticket? Not supported in v1; tickets are retained permanently; use CANCELLED status to mark abandoned work.
 
 ## Requirements *(mandatory)*
 
@@ -139,7 +149,7 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 
 **Ticket management**
 
-- **FR-001**: System MUST allow users to create a support ticket with title, description, and priority.
+- **FR-001**: System MUST allow users to create a support ticket with title, description, and priority; category is optional on create and defaults to GENERAL when omitted.
 - **FR-002**: System MUST assign new tickets status OPEN by default.
 - **FR-003**: System MUST display a list of tickets showing identifier, title, status, and priority at minimum.
 - **FR-004**: System MUST allow users to view full ticket detail including title, description, status, priority, assignee, category, and comment history.
@@ -166,13 +176,17 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 - **FR-015**: System MUST provide a natural-language question-answering capability over indexed ticket history.
 - **FR-016**: System MUST index ticket content as separate searchable units: one for description, one per comment, and one for the resolution field (when present).
 - **FR-017**: Each indexed unit MUST carry metadata: ticket identifier, content type (description, comment, or resolution), status, priority, assignee, and category; comment units MUST also carry comment identifier and timestamp.
-- **FR-018**: System MUST re-embed indexed units when searchable text changes (description edit, comment add/edit, resolution set or edit); metadata-only changes (status, priority, assignee, category) MUST update unit metadata without re-embedding unchanged text.
+- **FR-018**: System MUST re-embed indexed units when searchable text changes (description edit, comment add, resolution set or edit); metadata-only changes (status, priority, assignee, category) MUST update unit metadata without re-embedding unchanged text. Comment content is immutable after creation (no edit or delete in v1).
 - **FR-019**: System MUST retrieve relevant ticket content before generating an answer (single retrieve-then-answer flow per question).
 - **FR-020**: System MUST generate answers using only retrieved ticket context for support-specific questions; it MUST NOT supplement with general knowledge when ticket context is insufficient.
-- **FR-021**: Every in-scope answer MUST include a structured `sources` array listing each supporting unit with `ticketId` and `contentType` (description, comment, or resolution); ticket IDs MUST NOT be cited by free text alone.
+- **FR-021**: Every in-scope answer MUST include a structured `sources` array listing each supporting unit with `ticketId` (internal UUID), `displayId` (human-readable, e.g. TKT-1001), and `contentType` (description, comment, or resolution); ticket references MUST NOT be cited by free text alone.
 - **FR-022**: When no relevant tickets are found, the system MUST return a fixed no-match message in `answer`, an empty `sources` array, and MUST NOT fabricate ticket facts or plausible-sounding unsupported answers.
 - **FR-023**: The assistant MUST answer one question per request; it MUST NOT autonomously create tickets, send notifications, or chain into other actions.
 - **FR-024**: Retrieval sensitivity parameters (result count limit and relevance threshold) MUST be configurable without changing application code.
+
+**Quality & testability**
+
+- **FR-025**: Before v1 is considered complete, automated tests MUST cover: (1) ticket state machine — all valid transitions succeed and all invalid transitions are rejected with clear errors; (2) RAG grounding — in-scope answers include structured `sources` with `ticketId`, `displayId`, and `contentType`, and no-match responses return empty `sources` with the fixed message; (3) core ticket API flows — create, list, detail, update, comment add, status transition, search, and filter.
 
 ### Key Entities
 
@@ -184,7 +198,7 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 - **Category**: Classification of the issue domain (e.g., payment, shipment, account). Used for organization and retrieval metadata.
 - **Knowledge Document**: A single searchable unit derived from one ticket content section (description, one comment, or resolution field). Each unit is indexed independently and enriched with ticket metadata plus a content-type label for retrieval and citation.
 - **Assistant Question**: A natural-language query submitted by a user seeking an answer from ticket history.
-- **Assistant Answer**: A response containing `answer` text, a structured `sources` array (each entry: `ticketId` + `contentType`), or an empty `sources` array with a fixed no-match message in `answer` when retrieval finds nothing relevant.
+- **Assistant Answer**: A response containing `answer` text, a structured `sources` array (each entry: `ticketId` UUID + `displayId` + `contentType`), or an empty `sources` array with a fixed no-match message in `answer` when retrieval finds nothing relevant.
 
 ## Success Criteria *(mandatory)*
 
@@ -194,16 +208,17 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 - **SC-002**: 100% of invalid status transition attempts are rejected by the system with an understandable error message.
 - **SC-003**: Ticket data—including comments and status changes—remains intact and retrievable after application restart in 100% of test scenarios.
 - **SC-004**: Keyword search returns all tickets containing the search term in title or description with no false exclusions in test scenarios.
-- **SC-005**: For in-scope questions with matching ticket data, 100% of assistant responses include a non-empty `sources` array where every entry contains both `ticketId` and `contentType`.
+- **SC-005**: For in-scope questions with matching ticket data, 100% of assistant responses include a non-empty `sources` array where every entry contains `ticketId` (UUID), `displayId`, and `contentType`.
 - **SC-006**: For questions with no relevant ticket data, 100% of assistant responses contain a fixed no-match message in `answer`, an empty `sources` array, and no fabricated ticket facts.
 - **SC-007**: After a searchable-text change (description, comment, or resolution), a question about the new content returns an answer reflecting the update within one indexing cycle; metadata-only changes do not require text re-embedding.
 - **SC-008**: Support agents can complete the primary ticket workflow (create → update → comment → valid status transition) without encountering unexplained failures in 95% of guided test sessions.
+- **SC-009**: Automated test suites for state machine, RAG grounding, and core ticket API flows pass in CI before v1 release.
 
 ## Assumptions
 
 - Primary users are internal support agents managing customer issues; customer self-service portal is out of scope for this release.
 - Assignee is stored as a display name or identifier string; full user directory and authentication are out of scope unless added later.
-- Category uses a predefined set of values (e.g., payment, shipment, account, general) with a default of general when not specified.
+- Category uses a predefined set of values (PAYMENT, SHIPMENT, ACCOUNT, GENERAL); on ticket create, category is optional and defaults to GENERAL when not provided.
 - Ticket identifiers follow a human-readable format such as TKT-1001.
 - Resolution notes live in a dedicated ticket field, required on transition to RESOLVED; description, each comment, and resolution are indexed as separate knowledge documents.
 - The assistant handles one question per interaction; multi-turn conversational memory is out of scope.
@@ -213,6 +228,8 @@ A support agent asks natural-language questions about past tickets (e.g., "Have 
 
 ## Out of Scope
 
+- Comment edit and delete after creation (comments are add-only in v1).
+- Ticket delete (tickets are permanent; CANCELLED is the abandonment path).
 - Autonomous agent behavior (creating tickets, sending notifications, tool chaining) triggered by assistant responses.
 - General-knowledge answers not grounded in ticket data.
 - Customer-facing portal or external channel integrations (email, chat widgets).

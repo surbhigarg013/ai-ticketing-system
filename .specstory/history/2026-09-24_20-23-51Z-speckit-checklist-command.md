@@ -946,3 +946,1126 @@ _**Agent (default)**_
 7. **Frontend MVP** — Ticket list/detail/create, status actions with resolution field, assistant page with sources panel per plan UI flow.
 
 **Bottom line**: The specification and design artifacts are substantial and internally consistent, but **zero functional requirements are implemented**. The project is at the pre-implementation phase; next step is task generation and codebase scaffolding, not spec-vs-code gap fixes.
+
+---
+
+_**User**_
+
+/speckit-tasks
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Running `/speckit-tasks` to generate tasks.
+
+Following the speckit-tasks workflow. Running the setup script and loading design documents. Will generate tasks.md next.
+
+The spec includes acceptance scenarios but does not explicitly request test tasks. Test generation is optional under the skill rules. I will omit test tasks unless explicitly requested.
+
+The constitution mandates automated tests for business rules and the ticket. I will include critical test tasks where the constitution requires them, while still omitting general test tasks unless explicitly requested.
+
+Re-reading the skill rules confirms test tasks are strictly optional. The spec contains no explicit request to generate tests. I will exclude all test tasks from tasks.md.
+</details></think>
+
+_**Agent (default)**_
+
+Generating `tasks.md` from the feature spec and plan. Running setup and loading design documents.
+
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2"><details>
+<summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/surbhigarg/learning/ai-ticketing-system &amp;&amp; .specify/scripts/bash/setup-tasks.sh --json</summary>
+```bash
+cd /Users/surbhigarg/learning/ai-ticketing-system && .specify/scripts/bash/setup-tasks.sh --json
+```
+
+```
+{"FEATURE_DIR":"/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md"],"TASKS_TEMPLATE":"/Users/surbhigarg/learning/ai-ticketing-system/.specify/templates/tasks-template.md","TASKS_TEMPLATE_CONTENT":"---\n\ndescription: \"Task list template for feature implementation\"\n---\n\n# Tasks: [FEATURE NAME]\n\n**Input**: Design documents from `/specs/[###-feature-name]/`\n\n**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/\n\n**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.\n\n**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.\n\n## Format: `[ID] [P?] [Story] Description`\n\n- **[P]**: Can run in parallel (different files, no dependencies)\n- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)\n- Include exact file paths in descriptions\n\n## Path Conventions\n\n- **Single project**: `src/`, `tests/` at repository root\n- **Web app**: `backend/src/`, `frontend/src/`\n- **Mobile**: `api/src/`, `ios/src/` or `android/src/`\n- Paths shown below assume single project - adjust based on plan.md structure\n\n<!--\n  ============================================================================\n  IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.\n\n  The /speckit-tasks command MUST replace these with actual tasks based on:\n  - User stories from spec.md (with their priorities P1, P2, P3...)\n  - Feature requirements from plan.md\n  - Entities from data-model.md\n  - Endpoints from contracts/\n\n  Tasks MUST be organized by user story so each story can be:\n  - Implemented independently\n  - Tested independently\n  - Delivered as an MVP increment\n\n  DO NOT keep these sample tasks in the generated tasks.md file.\n  ====
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="search" data-tool-name="glob_file_search"><details>
+<summary>Tool use: **glob_file_search** • Searched codebase "" • **0** results in **1** directory</summary>
+
+Directory: **`/Users/surbhigarg/learning/ai-ticketing-system`** (0 files)
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/data-model.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/quickstart.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Reading the contracts and plan.md to understand the structure.
+
+Drafting a comprehensive tasks.md across eight phases. US2 and US3 are both P2 and US3 depends on existing tickets. US2 comments can work with US1 tickets.
+
+US3 status transitions are separate from US2 updates. RAG indexing may start in foundational or US5; it needs ticket events and shared infrastructure. Phase 1 covers backend Spring Boot 3.5, frontend Vite React, Docker Compose, and directory structure. Phase 2 covers Liquibase migrations, shared configuration, exception handling, and OpenAPI.
+
+Foundational phase will also include JPA entities, MapStruct, Lombok, and a React router shell. US1 scope covers Ticket entities, repositories, services, controllers, a DisplayId sequence generator, and frontend list, create, and read-only detail views.
+
+US2 adds PATCH updates, comment entities, and a frontend edit form with validation errors. US3 introduces a TicketStateMachine, status transition endpoints, and resolution fields. US4 adds search queries, status filters, and a frontend search UI. US5 covers the full RAG pipeline, including KnowledgeDocument and IndexingJob entities, an event listener, assistant endpoints, and a frontend assistant page. Some entities span multiple stories, such as Ticket, Comment, and state machine logic.
+
+A stub `TicketChangedEvent` publisher will be added in foundational or US1. The indexing listener and RAG pipeline will be wired in US5.
+
+Events will be published incrementally during ticket mutations in their respective stories rather than stubbed globally. The task list will total roughly 80 to 100 items, formatted as `- [ ] T001 Description with file path`, skipping dedicated test tasks unless the specification explicitly requires them. Phases will be assigned sequential IDs: Setup (T001–T010), Foundational (T011–T025), US1 (T026–T040), US2 (T041–T052), US3 (T053–T062), US4 (T063–T070), and US5 (T071–T095).
+
+Phase 8 Polish covers tasks T096 through T105. Now writing the full tasks file.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/contracts/rag-api.yaml</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/plan.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Writing the comprehensive tasks now.
+
+The markdown file will follow strict formatting rules. Tasks will be sequential with no test tasks. Descriptions will include data model constraints and map to user stories. The full plan spans eight phases with roughly 100 total tasks.
+
+US5 RAG requires mapping displayId to the Source ticketId field.
+</details></think>
+
+_**Agent (default)**_
+
+Generating `tasks.md` with phased, story-organized implementation tasks.
+
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/tasks.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+No extensions.yml file was found. Skipping post-execution hooks and proceeding directly to the completion report.
+
+Verified 86 total tasks across eight phases. User stories contain 13, 9, 7, 6, and 19 tasks respectively. Format validation passed. Each task includes a checkbox, ID, and file paths. Story labels appear only on user story phases.
+</details></think>
+
+_**Agent (default)**_
+
+## Completion Report
+
+**Generated**: `/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/tasks.md`
+
+### Summary
+
+| Metric | Count |
+|--------|-------|
+| **Total tasks** | 86 (T001–T086) |
+| Phase 1 Setup | 9 |
+| Phase 2 Foundational | 16 |
+| Phase 3 US1 (P1) | 13 |
+| Phase 4 US2 (P2) | 9 |
+| Phase 5 US3 (P2) | 7 |
+| Phase 6 US4 (P3) | 6 |
+| Phase 7 US5 (P3) | 19 |
+| Phase 8 Polish | 7 |
+
+### Task count per user story
+
+| Story | Tasks | Independent test |
+|-------|-------|------------------|
+| **US1** — Create & track tickets | 13 | quickstart Scenario 1 |
+| **US2** — Update & comments | 9 | quickstart Scenario 2 |
+| **US3** — Lifecycle enforcement | 7 | quickstart Scenario 3 |
+| **US4** — Search & filter | 6 | quickstart Scenario 4 |
+| **US5** — RAG Q&A | 19 | quickstart Scenario 5 |
+
+### Parallel opportunities
+
+- **Phase 1**: 7 parallel tasks after initial `pom.xml` (T003–T009)
+- **Phase 2**: Liquibase changesets T011–T015; config/exception/UI shell tasks
+- **US1**: Entity pair T026–T027; frontend pages T034–T036 after controller
+- **US5**: RAG entities T061–T062; assistant UI components T075–T077 after controller
+
+### Suggested MVP scope
+
+**Phases 1–3 only** (Setup + Foundational + US1) — ticket create, list, and detail. Validates via quickstart Scenario 1 before adding updates, lifecycle, search, or RAG.
+
+### Format validation
+
+All 86 tasks follow the required checklist format:
+- `- [ ]` checkbox
+- Sequential task ID (T001–T086)
+- `[P]` only on parallelizable tasks
+- `[US1]`–`[US5]` on user story phase tasks only
+- Exact file paths in every description
+- Data-model constraints quoted where relevant (field lengths, enums, validation rules)
+
+### Notes
+
+- **No dedicated test tasks** — spec defines acceptance scenarios but does not request TDD task generation; constitution still requires tests during implementation.
+- **Extension hooks**: `.specify/extensions.yml` not present — no pre/post hooks executed.
+- **Next step**: Review and approve `tasks.md`, then run `/speckit-implement` to begin Phase 1.
+
+---
+
+_**User**_
+
+/speckit-analyze
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Running a read-only analysis of spec.md, plan.md, and tasks.md for inconsistencies.
+
+Starting by checking prerequisites and loading the artifacts.
+</details></think>
+
+_**Agent (default)**_
+
+Running a read-only cross-artifact analysis: checking prerequisites and loading spec, plan, tasks, and constitution.
+
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2"><details>
+<summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/surbhigarg/learning/ai-ticketing-system &amp;&amp; .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks</summary>
+```bash
+cd /Users/surbhigarg/learning/ai-ticketing-system && .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks
+```
+
+```
+{"FEATURE_DIR":"/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md","tasks.md"]}
+
+```
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="search" data-tool-name="glob_file_search"><details>
+<summary>Tool use: **glob_file_search** • Searched codebase "" • **0** results in **1** directory</summary>
+
+Directory: **`/Users/surbhigarg/learning/ai-ticketing-system`** (0 files)
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Prerequisites passed. I already have the spec context from earlier.
+
+Reading tasks.md and key spec sections for a thorough analysis. Checking contracts for inconsistencies like displayId versus UUID.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/tasks.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/.specify/memory/constitution.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search"><details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+Parameters:
+
+```json
+{
+  "caseInsensitive": false,
+  "path": "/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag",
+  "pattern": "ticketId|displayId|display_id"
+}
+```
+Additional data:
+
+```json
+{
+  "isPruned": true,
+  "outputMode": "content",
+  "path": "/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag",
+  "pattern": "ticketId|displayId|display_id",
+  "topFiles": [
+    {
+      "matchCount": 3,
+      "uri": "specs/001-support-ticket-rag/research.md"
+    },
+    {
+      "matchCount": 6,
+      "uri": "specs/001-support-ticket-rag/contracts/tickets-api.yaml"
+    },
+    {
+      "matchCount": 3,
+      "uri": "specs/001-support-ticket-rag/quickstart.md"
+    },
+    {
+      "matchCount": 5,
+      "uri": "specs/001-support-ticket-rag/data-model.md"
+    },
+    {
+      "matchCount": 4,
+      "uri": "specs/001-support-ticket-rag/spec.md"
+    },
+    {
+      "matchCount": 6,
+      "uri": "specs/001-support-ticket-rag/contracts/rag-api.yaml"
+    },
+    {
+      "matchCount": 1,
+      "uri": "specs/001-support-ticket-rag/plan.md"
+    },
+    {
+      "matchCount": 2,
+      "uri": "specs/001-support-ticket-rag/checklists/implementation-readiness.md"
+    },
+    {
+      "matchCount": 12,
+      "uri": "specs/001-support-ticket-rag/tasks.md"
+    }
+  ],
+  "totalFiles": 9,
+  "totalMatches": 42
+}
+```
+Status: **completed**
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Checking for additional inconsistencies.
+
+T079 overlaps with T032, T039, T040, and T049. It is redundant. T066 listeners are in US5. T032 publishes events in US1. Indexing will wait for US5. This is by design.
+
+Constitution III requires automated tests for business rules and state machines. Tasks exclude test tasks. This is a critical constitution gap.
+
+contentType casing is inconsistent across the spec, data-model, and rag-api.
+
+rag-api Source.ticketId uses lowercase display IDs. The data-model stores UUID ticketId and displayId separately. FR-021 is ambiguous.
+
+SourceList T077 links to `/tickets/{id}`. This assumes UUID-based routing. If sources use displayIds instead, the link will fail. This is a critical inconsistency.
+
+The data-model defines COMMENT_UPDATE and COMMENT_DELETE triggers, yet the spec omits a comment edit API and no tasks implement comment edits or deletions.
+
+Ticket cascade delete is defined in the data-model but lacks any spec requirement or implementation tasks.
+
+T081 schedules IndexingJobProcessor, yet T067 implements the processor itself. T081 belongs in US5 alongside T067 so polling can function; placing it in Phase 8 polish is an ordering error.
+
+Performance targets for CRUD and assistant latency lack assigned tasks. Integration tests and RagEvalIT are mentioned in quickstart scenario 6 but have no corresponding tasks. FR-023 is implicitly covered by T071 and T072. Priority validation against the enum is not explicitly listed among the Bean Validation tasks.
+
+T079 retroactively wires CREATE event publishing for all paths. T032 already emits this event in US1. The listener is still in US5. This ordering is problematic.
+
+SC-001 and SC-008 are UX metrics excluded from buildable work. Testcontainers and integration test profiles appear in the plan without assigned tasks. The tickets-api error response shape needs verification. US1 includes category in its creation form, yet FR-001 only specifies title, description, and priority. The OPEN-to-CANCELLED transition is handled by the state machine.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/contracts/rag-api.yaml</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search"><details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+Parameters:
+
+```json
+{
+  "caseInsensitive": true,
+  "path": "/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag",
+  "pattern": "comment.*edit|delete|COMMENT_UPDATE|COMMENT_DELETE"
+}
+```
+Additional data:
+
+```json
+{
+  "isPruned": true,
+  "outputMode": "content",
+  "path": "/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag",
+  "pattern": "comment.*edit|delete|COMMENT_UPDATE|COMMENT_DELETE",
+  "topFiles": [
+    {
+      "matchCount": 1,
+      "uri": "specs/001-support-ticket-rag/tasks.md"
+    },
+    {
+      "matchCount": 3,
+      "uri": "specs/001-support-ticket-rag/checklists/implementation-readiness.md"
+    },
+    {
+      "matchCount": 3,
+      "uri": "specs/001-support-ticket-rag/data-model.md"
+    },
+    {
+      "matchCount": 1,
+      "uri": "specs/001-support-ticket-rag/plan.md"
+    },
+    {
+      "matchCount": 1,
+      "uri": "specs/001-support-ticket-rag/spec.md"
+    }
+  ],
+  "totalFiles": 5,
+  "totalMatches": 9
+}
+```
+Status: **completed**
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search"><details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+Parameters:
+
+```json
+{
+  "caseInsensitive": false,
+  "path": "/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/plan.md",
+  "pattern": "test|coverage|85%"
+}
+```
+Additional data:
+
+```json
+{
+  "isPruned": true,
+  "outputMode": "content",
+  "path": "/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/plan.md",
+  "pattern": "test|coverage|85%",
+  "topFiles": [
+    {
+      "matchCount": 10,
+      "uri": "specs/001-support-ticket-rag/plan.md"
+    }
+  ],
+  "totalFiles": 1,
+  "totalMatches": 10
+}
+```
+Status: **completed**
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Starting to compile key findings, beginning with critical issues.
+
+Constitution III mandates test coverage for state machines and business rules. SourceList T077 routes to `/tickets/{id}` while T071 uses `displayId` as `ticketId`, risking routing breakage without frontend resolution.
+
+Phase 8 scheduling in T081 conflicts with T067 processor requirements for indexing.
+
+FR-018 requires re-embedding on comment edits but provides no edit API or tasks beyond COMMENT_ADD.
+
+Ticket ID semantics are ambiguous across the spec, rag-api, and vector metadata. T079 duplicates per-service event publishing and risks missed paths or duplication.
+
+Medium priority gaps include missing COMMENT_DELETE and ticket delete cascade requirements, 85% coverage plan tasks, p95 performance targets, and orphaned events from T032 before US5 listeners exist.
+
+contentType casing mismatches between API lowercase and DB uppercase enums need a mapping task. FR-001 omits category creation despite tasks and plans. Invalid priority edge cases lack explicit task coverage. Scenario 6 integration tests have no assigned tasks. RagEvalIT and frontend Vitest lack task assignments. Coverage mapping shows FR-001 spans T032, T033, T036, and T037. FR-002 spans T026 and T032. FR-003 spans T033 and T035. FR-004 spans T033 and T038. FR-005 spans T039 and T044. FR-006 spans T040, T045, and T046. FR-007 spans T010–T016 and T026–T
+
+FR-008 through FR-024 coverage mapping is now complete. Success criteria SC-002 lacks test tasks. SC-003 and SC-004 are covered by existing tasks. SC-005 and SC-006 are implemented but lack test coverage.
+
+SC-007 is covered by T067 and T079. SC-001 and SC-008 are post-launch UX items excluded from scope.
+
+Constitution alignment is mostly complete. RAG coverage is solid. Spec, plan, and tasks are finished and awaiting approval.
+
+Several tasks lack clear mappings. T001–T009 are infrastructure. T080 CORS, T083 environment examples, T084 navigation, T085 quickstart validation, and T086 README are cross-cutting or polish. All have defined purposes.
+
+T002 includes MapStruct and Lombok.
+
+Constructor injection is required by constitution but lacks an explicit task. Field injection is prohibited yet no task enforces the constructor injection pattern. These are medium and low priority gaps. The analysis report is ready.
+</details></think>
+
+_**Agent (default)**_
+
+## Specification Analysis Report
+
+Cross-artifact review of `spec.md`, `plan.md`, `tasks.md`, and `constitution.md` for feature `001-support-ticket-rag`. **Read-only** — no files modified.
+
+---
+
+### Findings Table
+
+| ID | Category | Severity | Location(s) | Summary | Recommendation |
+|----|----------|----------|-------------|---------|----------------|
+| C1 | Constitution | **CRITICAL** | constitution.md §III; tasks.md L11–12 | Constitution **MUST** require automated tests for business rules and state machine; tasks explicitly exclude test tasks with no compensating implementation tasks. | Add a Phase 2 or per-story test task group (`TicketStateMachineTest`, `GroundingGuardTest`, `RagRetrievalIT`) or note in tasks that `/speckit-implement` must add tests before merge per constitution. |
+| C2 | Inconsistency | **CRITICAL** | tasks.md T071, T077; rag-api.yaml L81–84; plan.md L270 | `AssistantService` builds `sources[].ticketId` as **displayId** (TKT-1001) per contract, but `SourceList` links to `/tickets/{id}` assuming **UUID** route param. Citations won't resolve to detail pages. | Align spec/contract/tasks: either return UUID in `sources.ticketId` and add `displayId` field, or add lookup-by-displayId route / client resolver before linking. |
+| I1 | Inconsistency | **HIGH** | spec.md FR-021; data-model.md L155–156; rag-api.yaml L81–84 | `ticketId` means display ID in API contract, UUID in vector metadata, and is ambiguous in spec FR-021/SC-005. | Clarify in spec which identifier is canonical in `sources`; update data-model AssistantAnswer table to match. |
+| I2 | Ordering | **HIGH** | tasks.md T067 vs T081 | `IndexingJobProcessor` (US5, T067) needs polling/scheduling, but `SchedulingConfig` is deferred to **Phase 8** (T081). Indexing won't run until polish phase if tasks are followed literally. | Move T081 into Phase 7 (before or with T067) or fold scheduling into T067/T068. |
+| U1 | Underspecification | **HIGH** | spec.md FR-018; data-model.md L124–125; tasks.md | FR-018 requires re-embed on **comment edit**; data-model defines `COMMENT_UPDATE`/`COMMENT_DELETE` triggers; tasks only implement **comment add** (T040). No edit/delete API or indexing paths. | Either add comment-edit/delete tasks + contract endpoints, or narrow FR-018/spec to add-only and remove unused triggers from T022/data-model. |
+| U2 | Coverage Gap | **HIGH** | plan.md L284–329; tasks.md | Plan mandates ≥85% line coverage, Testcontainers integration tests, `RagEvalIT`, and Vitest component tests; **zero tasks** reference test files or CI profile. | Add polish-phase or per-story test tasks, or document that implement agent must add tests per plan Test Strategy. |
+| U3 | Ambiguity | **HIGH** | spec.md SC-002; plan.md L295–301 | SC-002 requires 100% invalid-transition rejection; no task creates the exhaustive transition test matrix plan describes. Tied to C1. | Add `TicketStateMachineTest` task covering all valid/invalid transitions from `contracts/state-machine.md`. |
+| I3 | Inconsistency | **MEDIUM** | rag-api.yaml ContentType; data-model.md L94; tasks.md T061 | API `contentType` values are lowercase (`description`, `comment`, `resolution`); JPA/DB enums are uppercase (`DESCRIPTION`, …). Mapping layer not specified. | Add explicit DTO mapping task or convention note in T073/T071. |
+| U4 | Underspecification | **MEDIUM** | data-model.md L124–125; spec.md | Data model documents ticket/comment **delete** cascade and vector cleanup; spec has no delete FR; no tasks. | Mark delete out-of-scope in spec, or add FR + tasks; remove orphan cascade rules from data-model if out of scope. |
+| I4 | Duplication | **MEDIUM** | tasks.md T032, T039, T040, T049 vs T079 | Event publishing is specified in individual service tasks **and** again in T079 (“wire for all mutation paths”). Risk of double-publish or missed paths. | Consolidate: either T079 only (remove from T032/39/40/49) or drop T079 and verify each path in service tasks. |
+| U5 | Underspecification | **MEDIUM** | spec.md FR-001; tasks.md T036; plan.md L243 | Create form includes **category**; FR-001 only requires title, description, priority. Category default `GENERAL` is in assumptions but not FR-001. | Add category to FR-001 or note optional field with default in spec. |
+| U6 | Coverage Gap | **MEDIUM** | plan.md L29–30; spec.md | Plan performance goals (CRUD p95 &lt; 200ms, assistant p95 &lt; 5s, indexing &lt; 30s) have no spec NFR IDs and no tasks. | Add NFR section to spec or accept as non-gating plan guidance; optional perf validation task in polish. |
+| I5 | Inconsistency | **MEDIUM** | tasks.md T032; Phase 7 | US1 T032 publishes `TicketChangedEvent` on create before US5 listener (T066) exists. Events are no-ops until US5 — acceptable, but SC-007 “within one indexing cycle” can't be validated until US5 complete. | Document in tasks that US1–US4 checkpoints don't require indexing; defer RAG freshness validation to US5 checkpoint. |
+| U7 | Underspecification | **MEDIUM** | spec.md Edge Cases L128; tasks.md | “Invalid priority” edge case and assignee empty-state behavior not reflected in task validation descriptions (only title whitespace explicit). | Extend T039/T041 Bean Validation task text with priority enum and assignee nullable rules. |
+| D1 | Duplication | **LOW** | spec.md FR-020, FR-022; constitution.md §IV | RAG grounding and no-match rules duplicated across spec and constitution (intentional alignment, not conflict). | No action; keep constitution as authority at review time. |
+| U8 | Underspecification | **LOW** | constitution.md §I; tasks.md | Constructor injection MUST; MapStruct MUST — mentioned in dependencies (T002, T031) but no explicit “no field injection” guard task. | Rely on code review / java-springboot rule; optional note in tasks Notes section. |
+| I6 | Inconsistency | **LOW** | quickstart.md Scenario 6; tasks.md T085 | Quickstart references `./mvnw verify -Pintegration-tests`; no task creates integration-test profile or test classes before T085 validation. | Fold test scaffolding into C1 remediation or narrow T085 to Scenarios 1–5 + 7 only until tests exist. |
+
+*50-finding cap not reached; 15 findings reported.*
+
+---
+
+### Coverage Summary Table
+
+| Requirement Key | Has Task? | Task IDs | Notes |
+|-----------------|-----------|----------|-------|
+| FR-001 Create ticket | ✅ | T032–T033, T036–T037 | Category included beyond FR text (U5) |
+| FR-002 Default OPEN | ✅ | T026, T032 | |
+| FR-003 Ticket list | ✅ | T033, T035 | |
+| FR-004 Ticket detail | ✅ | T033, T038 | |
+| FR-005 Update fields | ✅ | T039, T044 | |
+| FR-006 Add comments | ✅ | T040–T046 | Edit not covered (U1) |
+| FR-007 Persistence | ✅ | T010–T016, T026–T029 | |
+| FR-008 Server validation | ✅ | T019, T039, T041 | Priority edge partial (U7) |
+| FR-009 UI error messages | ✅ | T023–T024, T047, T053 | |
+| FR-010 Keyword search | ✅ | T055–T060 | |
+| FR-011 Status filter | ✅ | T056–T060 | |
+| FR-012 Server-only transitions | ✅ | T048–T050 | |
+| FR-013 Valid transitions only | ✅ | T048 | |
+| FR-014 Reject invalid transitions | ✅ | T048–T050, T053 | |
+| FR-014a Resolution required | ✅ | T048–T050, T052 | |
+| FR-015 RAG Q&A | ✅ | T071–T072, T078 | |
+| FR-016 Indexing units | ✅ | T064, T067 | |
+| FR-017 Unit metadata | ✅ | T061, T064, T068 | |
+| FR-018 Re-embed rules | ⚠️ Partial | T064, T067, T079 | Comment edit/delete missing (U1) |
+| FR-019 Retrieve-then-answer | ✅ | T069, T071 | |
+| FR-020 Grounded answers only | ✅ | T070–T071 | |
+| FR-021 Structured sources | ⚠️ Partial | T071, T077 | ticketId semantics conflict (C2, I1) |
+| FR-022 No-match response | ✅ | T071, T076 | |
+| FR-023 Single question/request | ✅ | T071 (implicit) | |
+| FR-024 Configurable retrieval | ✅ | T017 | |
+| SC-002 Invalid transitions 100% | ❌ | — | No test tasks (C1, U3) |
+| SC-003 Persistence after restart | ✅ | T010–T016 | Verified via infra, not explicit test task |
+| SC-004 Search completeness | ✅ | T055–T057 | |
+| SC-005 Citation completeness | ⚠️ | T071 | No eval/test task |
+| SC-006 No-match precision | ⚠️ | T071 | No eval/test task |
+| SC-007 Indexing freshness | ⚠️ | T067, T079 | Scheduling order issue (I2) |
+| SC-001, SC-008 | — | — | Post-launch UX metrics; excluded from buildable coverage |
+
+**Coverage %**: 24/24 FRs have ≥1 task (100%); 4 FRs partial due to identifier/comment-edit gaps. Buildable SCs: 3/6 fully task-backed, 3 partial, 2 excluded.
+
+---
+
+### Constitution Alignment Issues
+
+| Principle | Status | Issue |
+|-----------|--------|-------|
+| I Backend (Java 21, Liquibase, MapStruct) | ✅ Aligned | Tasks T001–T002, T010–T031 |
+| II PostgreSQL + PGVector + React TS | ✅ Aligned | T004, T007, T015, T068 |
+| III Validation + **Tests MUST** | ❌ **CRITICAL** | C1 — no test tasks despite MUST |
+| IV RAG Integrity | ✅ Aligned | T070–T071, T017; C2 risks citation UX |
+| V Spec-first before implement | ✅ Aligned | Artifacts complete; approval gate remains human |
+
+---
+
+### Unmapped Tasks
+
+All 86 tasks map to setup, foundational infra, user stories, or polish. None are orphan; cross-cutting tasks (T080–T086) lack explicit FR IDs but are appropriate for polish.
+
+---
+
+### Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total functional requirements | 24 (+ FR-014a) |
+| Total success criteria (buildable) | 6 |
+| Total tasks | 86 |
+| FR coverage (≥1 task) | **100%** |
+| FR fully covered (no gaps) | **~83%** (4 partial) |
+| Ambiguity count | 3 (I1, U5, U7) |
+| Duplication count | 2 (D1 intentional, I4) |
+| **Critical issues** | **2** (C1, C2) |
+
+---
+
+## Next Actions
+
+**Resolve CRITICAL issues before `/speckit-implement`:**
+
+1. **C1** — Add constitution-mandated test tasks (state machine, grounding guard, RAG integration) or amend tasks header with a hard gate: “implement agent must add tests per plan.md before PR.”
+2. **C2** — Resolve `sources.ticketId` vs frontend route param (`/tickets/:id`) in spec + tasks T071/T077.
+
+**HIGH priority (can proceed in parallel with C1 fixes):**
+
+3. **I2** — Move scheduling task (T081) into US5 phase.
+4. **U1** — Decide comment edit/delete scope; align FR-018, data-model triggers, and T022.
+5. **U2** — Add test/coverage tasks or reference plan Test Strategy as mandatory in implement skill.
+
+**If only MEDIUM/LOW remain:** Safe to start implementation on US1 MVP after C1/C2 are decided.
+
+**Suggested commands:**
+
+- `/speckit-clarify` — resolve `ticketId` in sources (display vs UUID) and comment edit scope
+- Manually edit `tasks.md` — move T081, add test tasks, fix T077 link strategy
+- `/speckit-implement` — after CRITICAL items addressed and tasks approved per constitution §V
+
+---
+
+Would you like me to suggest **concrete remediation edits** for the top 5 issues (C1, C2, I1, I2, U1)? I will not apply them unless you approve.
+
+---
+
+_**User**_
+
+/speckit-clarify 
+
+Read the output of analyze above. Ask clarifying questions to remove critical and high priority issues
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Preparing to run `/speckit-clarify` using the prior `/speckit-analyze` output to identify critical and high-priority issues.
+
+Running prerequisite checks and loading the spec and constitution. Only the first critical or high-priority issue will be asked now, per the sequential questioning rule.
+
+The first clarifying question targets `sources[].ticketId`: whether to use displayId or UUID. Other findings are implementation or plan issues rather than spec ambiguities.
+
+Comment edit scope is the next clarifying question. Ticket and comment delete scope are also being considered.
+</details></think>
+
+_**Agent (default)**_
+
+Running prerequisites and scanning the spec for the critical/high issues from the analyze report.
+
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2"><details>
+<summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/surbhigarg/learning/ai-ticketing-system &amp;&amp; .specify/scripts/bash/check-prerequisites.sh --json --paths-only</summary>
+```bash
+cd /Users/surbhigarg/learning/ai-ticketing-system && .specify/scripts/bash/check-prerequisites.sh --json --paths-only
+```
+
+```
+{"REPO_ROOT":"/Users/surbhigarg/learning/ai-ticketing-system","BRANCH":"001-support-ticket-rag","FEATURE_DIR":"/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag","FEATURE_SPEC":"/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md","IMPL_PLAN":"/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/plan.md","TASKS":"/Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/tasks.md"}
+
+```
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Context loaded. Preparing the first clarifying question based on the analysis report.
+
+Three issues need clarification: whether ticketId should use display IDs or UUIDs; whether comments support editing and deletion; and whether automated tests should be explicitly required.
+
+The first question targets the critical ticketId ambiguity. The second asks whether comments support editing and deletion. A third concerns whether automated tests should be explicitly required for state machine and RAG acceptance gates. Ticket delete scope is noted as related. The question about including both UUID and displayId may merge with the first.
+
+UUID fits REST API conventions and existing routes. DisplayId is needed for agent readability. The existing clarification text is ambiguous.
+
+User story 5 cites TKT-1001, confirming human-readable display IDs are expected in citations. The recommended approach is Option C: include both UUID and displayId in the Source object. This satisfies API routing and agent readability without breaking either use case.
+
+Reconsidering the ticketId recommendation. Since the rag-api contract explicitly defines ticketId as a display ID, aligning the spec with that contract and fixing the frontend to look up by displayId is preferable to adding both UUID and displayId. UUID-only is simpler and consistent with the rest of the API, but the contract already mandates displayId.
+
+Settled on Option C: UUID in `ticketId` for API consistency and linking, plus a separate `displayId` for human-readable citations. This resolves the conflict between the rag-api contract and user story expectations. Ready to present the first clarifying question.
+</details></think>
+
+_**Agent (default)**_
+
+From the analyze report, I queued up to **5 spec-level questions** for the critical/high issues. Task-ordering and test-task gaps (I2, U2) belong in `tasks.md`, not the spec — I'll cover those after we lock the spec decisions.
+
+---
+
+**Question:** In each assistant `sources` entry, should `ticketId` be the internal UUID, the human-readable display ID (e.g. `TKT-1001`), or should the response include both fields?
+
+This matters because the API contract, frontend routes (`/tickets/:id`), and User Story 5 (“cites TKT-1001”) currently disagree — wrong choice breaks citation links or confuses agents.
+
+**Recommended:** Option **C** — return both `ticketId` (UUID for navigation/API) and `displayId` (human-readable citation). That fixes the routing conflict without sacrificing the agent-facing ticket reference.
+
+| Option | Description |
+|--------|-------------|
+| A | `ticketId` = display ID only (e.g. `TKT-1001`); matches current `rag-api.yaml` description |
+| B | `ticketId` = UUID only; matches REST path params and frontend routing |
+| C | Both fields: `ticketId` (UUID) + `displayId` (e.g. `TKT-1001`) in each source entry |
+| D | `ticketId` = display ID; add separate `GET /tickets/by-display-id/{displayId}` for linking |
+
+You can reply with the option letter (e.g. `C`), accept the recommendation by saying **yes** or **recommended**, or provide your own short answer (≤5 words).
+
+---
+
+_**User**_
+
+C
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+The user selected option C. Each source entry includes both ticketId and displayId.
+
+Integrating the clarification into spec.md. Creating a new session subheading for today. Updating FR-021, Assistant Answer key entities, SC-005, and related sections. Fixing contradictory text. Saving the spec and re-validating requirements.md.
+
+Comment edit scope is the next high-priority topic. Reviewing the full spec to identify required updates.
+</details></think>
+
+_**Agent (default)**_
+
+Integrating option C into the spec, then continuing with the next clarification question.
+
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2"><details>
+<summary>Tool use: **read_file_v2** • Read file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/checklists/requirements.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Planning updates to spec.md.
+
+Adding a new session dated 2026-09-25. Updating FR-021 and SC-005 to include displayId. Revising the Assistant Answer in Key Entities. Adding a clarification bullet for ticketId versus displayId. Deciding whether to replace the old clarification line 17 or keep it as-is.
+
+FR-021 will become the authoritative source. The old clarification line stays as historical context. SC-005 will require both ticketId and displayId in every entry. User Story 5 acceptance scenarios will clarify that displayId appears in sources. All checklist items should remain valid.
+
+Proceeding to present question 2 about comment edit scope, marked U1 HIGH.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+The spec was updated. The checklist items remain unchanged.
+
+Question 2 on comment scope is next. It carries HIGH U1 priority from the analysis.
+</details></think>
+
+_**Agent (default)**_
+
+Recorded **Option C** in `spec.md` (FR-021, SC-005, User Story 5 acceptance scenarios, Key Entities).
+
+---
+
+**Question:** After a comment is added to a ticket, can agents edit or delete that comment in v1, or is the comment thread add-only?
+
+FR-018 mentions re-embedding on comment **edit**, but there is no edit/delete API or user story — this determines scope, indexing triggers, and what we build in US2.
+
+**Recommended:** Option **A** — add-only comments for v1. It matches the current user stories, avoids audit/complexity, and lets us narrow FR-018 to "comment add" only.
+
+| Option | Description |
+|--------|-------------|
+| A | Add-only — comments cannot be edited or deleted after creation |
+| B | Edit allowed — agents can update comment content (triggers re-index) |
+| C | Edit and delete — agents can update or remove comments (delete removes knowledge unit) |
+
+You can reply with the option letter (e.g. `A`), accept the recommendation by saying **yes** or **recommended**, or provide your own short answer (≤5 words).
+
+---
+
+_**User**_
+
+A
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+The user chose option A. Comments will be add-only for version 1.
+
+I'll integrate the add-only comment constraint into spec.md, update FR-018, and add a clarification bullet. Then I'll re-validate the requirements checklist and present question 3 of 5. Next priorities include ticket delete scope, automated test gates, and category-on-create.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Re-validating the checklist to confirm all items still pass.
+
+No changes to requirements.md. Next questions cover ticket delete scope, automated test requirements, and category creation. Starting with ticket delete.
+</details></think>
+
+_**Agent (default)**_
+
+**Recorded:** Add-only comments in v1 — updated FR-018, Edge Cases, and Out of Scope.
+
+---
+
+**Question:** Can support agents delete tickets in v1, or are tickets permanent once created?
+
+The data model describes cascade delete for tickets and knowledge documents, but the spec has no delete requirement — this affects API surface, indexing cleanup, and whether we keep delete logic in the data model.
+
+**Recommended:** Option **A** — no ticket delete in v1. It matches the current CRUD scope, avoids accidental data loss, and lets us drop cascade-delete from the v1 implementation path.
+
+| Option | Description |
+|--------|-------------|
+| A | No delete — tickets are permanent once created (cancel via CANCELLED only) |
+| B | Soft delete — tickets hidden from list but retained in database |
+| C | Hard delete — agents can permanently remove tickets and cascade to comments/indexes |
+
+You can reply with the option letter (e.g. `A`), accept the recommendation by saying **yes** or **recommended**, or provide your own short answer (≤5 words).
+
+---
+
+_**User**_
+
+A
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Version 1 will not support ticket deletion. Tickets remain permanent once created. Cancellation must be handled through the CANCELLED status only.
+
+Updating the specification to require automated constitution tests. Next steps include adding the remaining high-priority items to the validation checklist and presenting the fourth of five questions.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Question 4 covers automated testing.
+
+Constitution III mandates automated tests for business rules and state machines. Analyze C1 excludes tests from tasks. The recommended approach is Option A: explicitly require automated tests for state machine, RAG grounding, and core API as a delivery gate. This aligns with the constitution and closes the analysis gap.
+</details></think>
+
+_**Agent (default)**_
+
+**Recorded:** No ticket delete in v1 — updated Edge Cases and Out of Scope.
+
+---
+
+**Question:** Must v1 include automated tests for the state machine and RAG grounding before the feature is considered complete, or is manual quickstart validation enough?
+
+The constitution requires automated tests for business rules and the state machine, but the spec only has manual acceptance scenarios — this decides whether we add explicit test gates to the spec and `tasks.md`.
+
+**Recommended:** Option **A** — automated tests are required before v1 is complete. It matches the constitution, closes the analyze C1 gap, and makes SC-002/SC-005/SC-006 objectively verifiable.
+
+| Option | Description |
+|--------|-------------|
+| A | Automated tests required — state machine, RAG grounding/citations, and core API flows must have automated test coverage before v1 is done |
+| B | Manual only — quickstart.md scenarios are sufficient acceptance validation for v1 |
+| C | Hybrid — automated tests for state machine only; RAG validated manually |
+
+You can reply with the option letter (e.g. `A`), accept the recommendation by saying **yes** or **recommended**, or provide your own short answer (≤5 words).
+
+---
+
+_**User**_
+
+A
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Automated tests are required for state machine, RAG grounding and citations, and core API flows before v1 is complete.
+
+Four questions have been asked. The fifth will cover either category on ticket creation or external service failure handling for RAG.
+
+The automated test requirement will be added to spec.md as a new functional requirement or quality gate. The fifth question will address either category on ticket creation or external service failure handling for RAG.
+
+FR-025 will explicitly mandate automated tests for ticket state machine transitions, RAG grounding and citations, and core API flows before v1 completion. The fifth question will target category on ticket creation, since FR-001 omits it despite the plan including it. The requirements checklist remains valid.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Question 5 is the final one. Category on create is a strong candidate from analyze U5.
+
+RAG external service failure (503) is another possibility from anal U34. The question will be whether category is required on create or optional with a default value.
+</details></think>
+
+_**Agent (default)**_
+
+**Recorded:** Automated tests required — added FR-025 and SC-009.
+
+---
+
+**Question:** When creating a ticket, must the agent select a category, or should category default to GENERAL when omitted?
+
+FR-001 only lists title, description, and priority, but the plan and data model include category — this affects the create form, validation rules, and API contract.
+
+**Recommended:** Option **B** — category is optional on create with default `GENERAL`. It keeps the create form simple while still supporting payment/shipment filtering and RAG metadata.
+
+| Option | Description |
+|--------|-------------|
+| A | Required — agent must select category on every new ticket |
+| B | Optional — defaults to GENERAL when not specified |
+| C | Not on create — category assigned later via update only |
+
+You can reply with the option letter (e.g. `B`), accept the recommendation by saying **yes** or **recommended**, or provide your own short answer (≤5 words).
+
+---
+
+_**User**_
+
+recommended
+
+---
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+The user accepted the recommended category option B for creation. It is optional and defaults to GENERAL.
+
+All five clarification questions are answered. The workflow is complete. I will integrate the decisions into spec.md and produce the final completion report.
+</details></think>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2"><details>
+<summary>Tool use: **edit_file_v2** • Edit file: /Users/surbhigarg/learning/ai-ticketing-system/specs/001-support-ticket-rag/spec.md</summary>
+
+</details></tool-use>
+
+_**Agent (default)**_
+
+<think><details><summary>Thought Process</summary>
+Re-validating the requirements checklist for state changes.
+
+All items should pass with FR-025 test requirements. No regressions expected. Preparing a completion report with a coverage summary table.
+</details></think>
+
+_**Agent (default)**_
+
+## Clarification Complete
+
+**Questions asked & answered:** 5 / 5
+
+**Updated spec:** `specs/001-support-ticket-rag/spec.md`
+
+### Decisions Recorded (Session 2026-09-25)
+
+| # | Decision |
+|---|----------|
+| 1 | `sources` entries include **both** `ticketId` (UUID) and `displayId` (TKT-1001) |
+| 2 | Comments are **add-only** in v1 (no edit/delete) |
+| 3 | Tickets are **permanent** — no delete; use CANCELLED to abandon |
+| 4 | **Automated tests required** before v1 (state machine, RAG, core API) — FR-025, SC-009 |
+| 5 | Category **optional on create**, defaults to **GENERAL** |
+
+### Sections Touched
+
+- `## Clarifications` (Session 2026-09-25)
+- User Story 5 acceptance scenarios
+- Edge Cases
+- Functional Requirements (FR-001, FR-018, FR-021, FR-025)
+- Key Entities (Assistant Answer)
+- Success Criteria (SC-005, SC-009)
+- Assumptions
+- Out of Scope
+
+### Spec Quality Checklist
+
+**16/16 → 16/16 items passing** (no state changes)
+
+All items remain checked. FR-025 strengthens testability without conflicting with existing checklist criteria.
+
+### Coverage Summary
+
+| Category | Status |
+|----------|--------|
+| Functional scope & behavior | **Resolved** — comment/ticket immutability, category default |
+| Domain & data model | **Resolved** — `ticketId` + `displayId` in sources |
+| Interaction & UX flow | **Clear** — source links can use UUID; displayId for display |
+| Non-functional (testing) | **Resolved** — FR-025 / SC-009 |
+| Integration & external deps | **Deferred** — OpenAI 503 handling not spec'd (plan/contracts only) |
+| Edge cases & failure handling | **Resolved** — comment/ticket delete edge cases added |
+| Constraints & tradeoffs | **Clear** |
+| Terminology & consistency | **Resolved** — citation fields clarified |
+| Completion signals | **Resolved** — automated test gate added |
+| Task ordering (T081 scheduling) | **Deferred** — update `tasks.md`, not spec |
+| Contract alignment (`rag-api.yaml`) | **Outstanding** — contract still shows `ticketId` as display ID only; update in plan/contracts pass |
+
+### Analyze Issues Addressed
+
+| Issue | Status |
+|-------|--------|
+| C2 / I1 — `ticketId` ambiguity | **Resolved** in spec |
+| U1 — comment edit scope | **Resolved** |
+| U4 — ticket delete scope | **Resolved** |
+| C1 / U2 — test tasks missing | **Partially resolved** — spec now mandates tests (FR-025); **`tasks.md` still needs test tasks added** |
+| I2 — T081 scheduling order | **Deferred** — edit `tasks.md` |
+| I3 — contentType casing | **Deferred** — implementation mapping detail |
+
+### Suggested Next Steps
+
+1. **Update `contracts/rag-api.yaml`** — add `displayId` to `Source` schema; clarify `ticketId` as UUID
+2. **Update `tasks.md`** — add test tasks per FR-025; move T081 into US5; align T071/T077 with dual-ID sources; remove `COMMENT_UPDATE`/`COMMENT_DELETE` from T022
+3. **Run `/speckit-implement`** after tasks are aligned
+
+Would you like me to apply the remediation edits to `contracts/rag-api.yaml` and `tasks.md` next?
