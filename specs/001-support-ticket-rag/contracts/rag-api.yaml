@@ -1,0 +1,155 @@
+openapi: 3.1.0
+info:
+  title: Ticket Knowledge Assistant API
+  version: 1.0.0
+  description: RAG-based natural-language Q&A over indexed ticket history.
+
+servers:
+  - url: /api/v1
+
+paths:
+  /assistant/ask:
+    post:
+      operationId: askQuestion
+      summary: Ask a natural-language question over ticket history
+      description: |
+        Single retrieve-then-answer flow. Returns grounded answer with structured
+        sources or a fixed no-match message when retrieval finds nothing above threshold.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+      responses:
+        '200':
+          description: Assistant response (grounded or no-match)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AskResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '503':
+          description: Embedding or LLM service unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /assistant/index-status/{ticketId}:
+    parameters:
+      - name: ticketId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getIndexStatus
+      summary: Get indexing status for a ticket (ops/debug)
+      responses:
+        '200':
+          description: Index status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexStatusResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    AskRequest:
+      type: object
+      required: [question]
+      properties:
+        question:
+          type: string
+          minLength: 3
+          maxLength: 2000
+          example: Have we seen payment failures before?
+
+    ContentType:
+      type: string
+      enum: [description, comment, resolution]
+
+    Source:
+      type: object
+      required: [ticketId, contentType]
+      properties:
+        ticketId:
+          type: string
+          description: Display id e.g. TKT-1001
+          example: TKT-1001
+        contentType:
+          $ref: '#/components/schemas/ContentType'
+
+    AskResponse:
+      type: object
+      required: [answer, sources]
+      properties:
+        answer:
+          type: string
+          description: Generated answer or fixed no-match message
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+          description: Empty when no relevant tickets found
+
+    IndexStatusResponse:
+      type: object
+      required: [ticketId, documents, lastIndexedAt]
+      properties:
+        ticketId:
+          type: string
+          format: uuid
+        documents:
+          type: array
+          items:
+            type: object
+            properties:
+              contentType:
+                $ref: '#/components/schemas/ContentType'
+              indexedAt:
+                type: string
+                format: date-time
+                nullable: true
+              textHash:
+                type: string
+        lastIndexedAt:
+          type: string
+          format: date-time
+          nullable: true
+        pendingJobs:
+          type: integer
+
+    ProblemDetail:
+      type: object
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+
+  responses:
+    ValidationError:
+      description: Validation failure
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
