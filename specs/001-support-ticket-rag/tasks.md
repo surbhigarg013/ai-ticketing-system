@@ -55,15 +55,15 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 - [X] T014 [P] Add changeset `backend/src/main/resources/db/changelog/changes/004-search-indexes.sql` (indexes on status, priority, category; GIN/trigram on title + description)
 - [X] T015 [P] Add changeset `backend/src/main/resources/db/changelog/changes/005-vector-table.sql` (knowledge_embeddings PGVector table, HNSW index, 1536 dimensions, COSINE_DISTANCE)
 - [X] T016 Configure datasource and Liquibase in `backend/src/main/resources/application.yml` (PostgreSQL URL, `spring.liquibase.change-log`, `spring.ai.vectorstore.pgvector.initialize-schema: false`)
-- [ ] T017 [P] Create `RagProperties` config record in `backend/src/main/java/com/ticketing/shared/config/RagProperties.java` (`top-k`, `similarity-threshold`, `no-match-message`, indexing retry settings bound to `app.rag.*` env vars)
-- [ ] T018 [P] Create OpenAPI config in `backend/src/main/java/com/ticketing/shared/config/OpenApiConfig.java` (title, version, `/api/v1` base)
-- [ ] T019 Create `GlobalExceptionHandler` in `backend/src/main/java/com/ticketing/shared/exception/GlobalExceptionHandler.java` (problem+json for 400 validation, 404 not found, 409 state conflict, 500 generic)
-- [ ] T020 [P] Create domain exception types in `backend/src/main/java/com/ticketing/shared/exception/` (`ResourceNotFoundException`, `InvalidStateTransitionException`, `ValidationException`)
+- [X] T017 [P] Create `RagProperties` config record in `backend/src/main/java/com/ticketing/shared/config/RagProperties.java` (`top-k`, `similarity-threshold`, `no-match-message`, indexing retry settings bound to `app.rag.*` env vars)
+- [X] T018 [P] Create OpenAPI config in `backend/src/main/java/com/ticketing/shared/config/OpenApiConfig.java` (title, version, `/api/v1` base)
+- [X] T019 Create `GlobalExceptionHandler` in `backend/src/main/java/com/ticketing/shared/exception/GlobalExceptionHandler.java` (problem+json for 400 validation, 404 not found, 409 state conflict, 500 generic)
+- [X] T020 [P] Create domain exception types in `backend/src/main/java/com/ticketing/shared/exception/` (`ResourceNotFoundException`, `InvalidStateTransitionException`, `ValidationException`)
 - [X] T021 [P] Create ticket enums in `backend/src/main/java/com/ticketing/ticket/domain/` (`TicketStatus`: OPEN, IN_PROGRESS, RESOLVED, CLOSED, CANCELLED; `Priority`: LOW, MEDIUM, HIGH; `Category`: PAYMENT, SHIPMENT, ACCOUNT, GENERAL)
 - [X] T022 Create `TicketChangedEvent` record in `backend/src/main/java/com/ticketing/ticket/event/TicketChangedEvent.java` (ticketId, trigger enum: CREATE, UPDATE, COMMENT_ADD, COMMENT_UPDATE, COMMENT_DELETE, STATUS_CHANGE)
-- [ ] T023 [P] Create frontend API client in `frontend/src/shared/api/client.ts` (fetch wrapper, problem+json parser, base URL `/api/v1`)
-- [ ] T024 [P] Create shared UI components in `frontend/src/shared/components/ErrorBanner.tsx` and `frontend/src/shared/components/LoadingSpinner.tsx`
-- [ ] T025 Create app router shell in `frontend/src/app/App.tsx` and `frontend/src/app/router.tsx` (routes: `/tickets`, `/tickets/new`, `/tickets/:id`, `/assistant`; layout with nav links)
+- [X] T023 [P] Create frontend API client in `frontend/src/shared/api/client.ts` (fetch wrapper, problem+json parser, base URL `/api/v1`)
+- [X] T024 [P] Create shared UI components in `frontend/src/shared/components/ErrorBanner.tsx` and `frontend/src/shared/components/LoadingSpinner.tsx`
+- [X] T025 Create app router shell in `frontend/src/app/App.tsx` and `frontend/src/app/router.tsx` (routes: `/tickets`, `/tickets/new`, `/tickets/:id`, `/assistant`; layout with nav links)
 
 **Checkpoint**: Foundation ready — database migrates on startup, shared error handling and routing in place
 
@@ -81,15 +81,15 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 - [X] T027 [P] [US1] Create JPA `Comment` entity in `backend/src/main/java/com/ticketing/ticket/domain/Comment.java` (`content` TEXT non-blank, `author` VARCHAR(100) NOT NULL, `created_at` TIMESTAMPTZ)
 - [X] T028 [US1] Create `TicketRepository` in `backend/src/main/java/com/ticketing/ticket/repository/TicketRepository.java` (JpaRepository + display_id sequence query)
 - [X] T029 [US1] Create `CommentRepository` in `backend/src/main/java/com/ticketing/ticket/repository/CommentRepository.java`
-- [ ] T030 [P] [US1] Create request/response DTO records in `backend/src/main/java/com/ticketing/ticket/api/` (`CreateTicketRequest`, `TicketSummary`, `TicketDetail`, `CommentDto`, `TicketPage` per contracts/tickets-api.yaml)
-- [ ] T031 [US1] Create MapStruct mapper `TicketMapper` in `backend/src/main/java/com/ticketing/ticket/api/TicketMapper.java`
-- [ ] T032 [US1] Implement `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (create with display_id generation TKT-NNNN, list paginated, getById with comments chronological; publish `TicketChangedEvent` on create)
-- [ ] T033 [US1] Implement `TicketController` in `backend/src/main/java/com/ticketing/ticket/api/TicketController.java` (`POST /api/v1/tickets` → 201 + Location, `GET /api/v1/tickets` paginated, `GET /api/v1/tickets/{ticketId}`)
-- [ ] T034 [P] [US1] Create ticket API client in `frontend/src/features/tickets/api/ticketApi.ts` (listTickets, getTicket, createTicket)
-- [ ] T035 [P] [US1] Create `TicketListPage` in `frontend/src/features/tickets/pages/TicketListPage.tsx` (table: displayId, title, status, priority; link to detail; "New Ticket" button)
-- [ ] T036 [P] [US1] Create `CreateTicketPage` in `frontend/src/features/tickets/pages/CreateTicketPage.tsx` (form: title, description, priority, category, optional assignee)
-- [ ] T037 [US1] Create `TicketForm` component in `frontend/src/features/tickets/components/TicketForm.tsx` (client-side required field validation, submit via ticketApi)
-- [ ] T038 [US1] Create `TicketDetailPage` in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (read-only view: title, description, status, priority, assignee, category, comments list)
+- [X] T030 [P] [US1] Create request/response DTO records in `backend/src/main/java/com/ticketing/ticket/api/` (`CreateTicketRequest`, `TicketSummary`, `TicketDetail`, `CommentDto`, `TicketPage` per contracts/tickets-api.yaml)
+- [X] T031 [US1] Create MapStruct mapper `TicketMapper` in `backend/src/main/java/com/ticketing/ticket/api/TicketMapper.java`
+- [X] T032 [US1] Implement `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (create with display_id generation TKT-NNNN, list paginated, getById with comments chronological; publish `TicketChangedEvent` on create)
+- [X] T033 [US1] Implement `TicketController` in `backend/src/main/java/com/ticketing/ticket/api/TicketController.java` (`POST /api/v1/tickets` → 201 + Location, `GET /api/v1/tickets` paginated, `GET /api/v1/tickets/{ticketId}`)
+- [X] T034 [P] [US1] Create ticket API client in `frontend/src/features/tickets/api/ticketApi.ts` (listTickets, getTicket, createTicket)
+- [X] T035 [P] [US1] Create `TicketListPage` in `frontend/src/features/tickets/pages/TicketListPage.tsx` (table: displayId, title, status, priority; link to detail; "New Ticket" button)
+- [X] T036 [P] [US1] Create `CreateTicketPage` in `frontend/src/features/tickets/pages/CreateTicketPage.tsx` (form: title, description, priority, category, optional assignee)
+- [X] T037 [US1] Create `TicketForm` component in `frontend/src/features/tickets/components/TicketForm.tsx` (client-side required field validation, submit via ticketApi)
+- [X] T038 [US1] Create `TicketDetailPage` in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (read-only view: title, description, status, priority, assignee, category, comments list)
 
 **Checkpoint**: User Story 1 complete — ticket CRUD (create/list/detail) works end-to-end via API and UI
 
@@ -103,15 +103,15 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 ### Implementation for User Story 2
 
-- [ ] T039 [US2] Add `updateTicket` method to `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (PATCH fields: title, description, priority, assignee, category; reject blank/whitespace-only title; publish `TicketChangedEvent` trigger UPDATE)
-- [ ] T040 [US2] Implement `CommentService` in `backend/src/main/java/com/ticketing/ticket/service/CommentService.java` (add comment: content non-blank, author required; publish `TicketChangedEvent` trigger COMMENT_ADD)
-- [ ] T041 [US2] Add `PATCH /api/v1/tickets/{ticketId}` and `POST /api/v1/tickets/{ticketId}/comments` to `TicketController` in `backend/src/main/java/com/ticketing/ticket/api/TicketController.java` (400 on Bean Validation failure with problem+json `errors[]`)
-- [ ] T042 [P] [US2] Create `UpdateTicketRequest` and `CreateCommentRequest` records in `backend/src/main/java/com/ticketing/ticket/api/` per contracts/tickets-api.yaml
-- [ ] T043 [P] [US2] Add `updateTicket` and `addComment` to `frontend/src/features/tickets/api/ticketApi.ts`
-- [ ] T044 [US2] Add editable fields to `TicketDetailPage` in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (inline edit or edit mode for title, description, priority, assignee, category)
-- [ ] T045 [P] [US2] Create `CommentList` component in `frontend/src/features/tickets/components/CommentList.tsx` (chronological display: content, author, timestamp)
-- [ ] T046 [US2] Create `CommentForm` component in `frontend/src/features/tickets/components/CommentForm.tsx` (content + author fields, submit adds comment and refreshes list)
-- [ ] T047 [US2] Add inline validation error display for 400 responses in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (map problem+json `errors[]` to form fields)
+- [X] T039 [US2] Add `updateTicket` method to `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (PATCH fields: title, description, priority, assignee, category; reject blank/whitespace-only title; publish `TicketChangedEvent` trigger UPDATE)
+- [X] T040 [US2] Implement `CommentService` in `backend/src/main/java/com/ticketing/ticket/service/CommentService.java` (add comment: content non-blank, author required; publish `TicketChangedEvent` trigger COMMENT_ADD)
+- [X] T041 [US2] Add `PATCH /api/v1/tickets/{ticketId}` and `POST /api/v1/tickets/{ticketId}/comments` to `TicketController` in `backend/src/main/java/com/ticketing/ticket/api/TicketController.java` (400 on Bean Validation failure with problem+json `errors[]`)
+- [X] T042 [P] [US2] Create `UpdateTicketRequest` and `CreateCommentRequest` records in `backend/src/main/java/com/ticketing/ticket/api/` per contracts/tickets-api.yaml
+- [X] T043 [P] [US2] Add `updateTicket` and `addComment` to `frontend/src/features/tickets/api/ticketApi.ts`
+- [X] T044 [US2] Add editable fields to `TicketDetailPage` in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (inline edit or edit mode for title, description, priority, assignee, category)
+- [X] T045 [P] [US2] Create `CommentList` component in `frontend/src/features/tickets/components/CommentList.tsx` (chronological display: content, author, timestamp)
+- [X] T046 [US2] Create `CommentForm` component in `frontend/src/features/tickets/components/CommentForm.tsx` (content + author fields, submit adds comment and refreshes list)
+- [X] T047 [US2] Add inline validation error display for 400 responses in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (map problem+json `errors[]` to form fields)
 
 **Checkpoint**: User Story 2 complete — updates and comments persist; invalid input shows meaningful errors
 
@@ -125,13 +125,13 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 ### Implementation for User Story 3
 
-- [ ] T048 [US3] Implement pure `TicketStateMachine` in `backend/src/main/java/com/ticketing/ticket/domain/TicketStateMachine.java` (`canTransition(from,to)` graph lookup; `transition(ticket,target,resolution)` validates resolution non-blank when target RESOLVED; throws `InvalidStateTransitionException` per contracts/state-machine.md)
-- [ ] T049 [US3] Add `transitionStatus` method to `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (delegate to state machine; persist resolution on RESOLVED; publish `TicketChangedEvent` trigger STATUS_CHANGE)
-- [ ] T050 [US3] Add `PATCH /api/v1/tickets/{ticketId}/status` to `TicketController` in `backend/src/main/java/com/ticketing/ticket/api/TicketController.java` (`StatusTransitionRequest` with status + optional resolution; 409 on invalid transition, 400 on blank resolution)
-- [ ] T051 [P] [US3] Create `StatusTransitionRequest` record in `backend/src/main/java/com/ticketing/ticket/api/StatusTransitionRequest.java`
-- [ ] T052 [P] [US3] Create `StatusActions` component in `frontend/src/features/tickets/components/StatusActions.tsx` (show only valid next states from current status; resolution textarea required when transitioning to RESOLVED)
-- [ ] T053 [US3] Integrate `StatusActions` into `TicketDetailPage` in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (409 error banner with problem+json `detail`; refresh ticket on success)
-- [ ] T054 [P] [US3] Add `transitionStatus` to `frontend/src/features/tickets/api/ticketApi.ts`
+- [X] T048 [US3] Implement pure `TicketStateMachine` in `backend/src/main/java/com/ticketing/ticket/domain/TicketStateMachine.java` (`canTransition(from,to)` graph lookup; `transition(ticket,target,resolution)` validates resolution non-blank when target RESOLVED; throws `InvalidStateTransitionException` per contracts/state-machine.md)
+- [X] T049 [US3] Add `transitionStatus` method to `TicketService` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (delegate to state machine; persist resolution on RESOLVED; publish `TicketChangedEvent` trigger STATUS_CHANGE)
+- [X] T050 [US3] Add `PATCH /api/v1/tickets/{ticketId}/status` to `TicketController` in `backend/src/main/java/com/ticketing/ticket/api/TicketController.java` (`StatusTransitionRequest` with status + optional resolution; 409 on invalid transition, 400 on blank resolution)
+- [X] T051 [P] [US3] Create `StatusTransitionRequest` record in `backend/src/main/java/com/ticketing/ticket/api/StatusTransitionRequest.java`
+- [X] T052 [P] [US3] Create `StatusActions` component in `frontend/src/features/tickets/components/StatusActions.tsx` (show only valid next states from current status; resolution textarea required when transitioning to RESOLVED)
+- [X] T053 [US3] Integrate `StatusActions` into `TicketDetailPage` in `frontend/src/features/tickets/pages/TicketDetailPage.tsx` (409 error banner with problem+json `detail`; refresh ticket on success)
+- [X] T054 [P] [US3] Add `transitionStatus` to `frontend/src/features/tickets/api/ticketApi.ts`
 
 **Checkpoint**: User Story 3 complete — lifecycle transitions enforced server-side with clear UI feedback
 
@@ -145,12 +145,12 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 ### Implementation for User Story 4
 
-- [ ] T055 [US4] Add keyword search query to `TicketRepository` in `backend/src/main/java/com/ticketing/ticket/repository/TicketRepository.java` (trigram/GIN match on title and description only; case-insensitive)
-- [ ] T056 [US4] Extend `TicketService.listTickets` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (accept optional `q` and `status` query params; combine filters; return empty page not error when no matches)
-- [ ] T057 [US4] Add `q` and `status` query parameters to `GET /api/v1/tickets` in `TicketController` per contracts/tickets-api.yaml
-- [ ] T058 [P] [US4] Create `SearchBar` component in `frontend/src/features/tickets/components/SearchBar.tsx` (debounced keyword input)
-- [ ] T059 [P] [US4] Create `StatusFilter` component in `frontend/src/features/tickets/components/StatusFilter.tsx` (dropdown: OPEN, IN_PROGRESS, RESOLVED, CLOSED, CANCELLED, All)
-- [ ] T060 [US4] Integrate search and filter into `TicketListPage` in `frontend/src/features/tickets/pages/TicketListPage.tsx` (pass `q` and `status` to listTickets; show empty state when total is 0)
+- [X] T055 [US4] Add keyword search query to `TicketRepository` in `backend/src/main/java/com/ticketing/ticket/repository/TicketRepository.java` (trigram/GIN match on title and description only; case-insensitive)
+- [X] T056 [US4] Extend `TicketService.listTickets` in `backend/src/main/java/com/ticketing/ticket/service/TicketService.java` (accept optional `q` and `status` query params; combine filters; return empty page not error when no matches)
+- [X] T057 [US4] Add `q` and `status` query parameters to `GET /api/v1/tickets` in `TicketController` per contracts/tickets-api.yaml
+- [X] T058 [P] [US4] Create `SearchBar` component in `frontend/src/features/tickets/components/SearchBar.tsx` (debounced keyword input)
+- [X] T059 [P] [US4] Create `StatusFilter` component in `frontend/src/features/tickets/components/StatusFilter.tsx` (dropdown: OPEN, IN_PROGRESS, RESOLVED, CLOSED, CANCELLED, All)
+- [X] T060 [US4] Integrate search and filter into `TicketListPage` in `frontend/src/features/tickets/pages/TicketListPage.tsx` (pass `q` and `status` to listTickets; show empty state when total is 0)
 
 **Checkpoint**: User Story 4 complete — search and filter work independently of other stories
 
@@ -164,25 +164,25 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 ### Implementation for User Story 5
 
-- [ ] T061 [P] [US5] Create JPA `KnowledgeDocument` entity in `backend/src/main/java/com/ticketing/rag/domain/KnowledgeDocument.java` (fields per data-model.md; `content_type` ENUM DESCRIPTION/COMMENT/RESOLUTION; `text_hash` SHA-256 VARCHAR(64); unique on ticket_id + content_type + source_ref_id)
-- [ ] T062 [P] [US5] Create JPA `IndexingJob` entity in `backend/src/main/java/com/ticketing/rag/domain/IndexingJob.java` (trigger ENUM, status PENDING/PROCESSING/COMPLETED/FAILED, attempts default 0, max 3 retries)
-- [ ] T063 [US5] Create `KnowledgeDocumentRepository` and `IndexingJobRepository` in `backend/src/main/java/com/ticketing/rag/repository/`
-- [ ] T064 [US5] Implement `KnowledgeDocumentBuilder` in `backend/src/main/java/com/ticketing/rag/ingestion/KnowledgeDocumentBuilder.java` (canonical text format per data-model.md; one unit per description, each comment, resolution when present; compute text_hash)
-- [ ] T065 [US5] Implement `IndexingJobEnqueuer` in `backend/src/main/java/com/ticketing/rag/ingestion/IndexingJobEnqueuer.java` (create PENDING job in same transaction as ticket mutation via outbox pattern)
-- [ ] T066 [US5] Create `TicketChangedEventListener` in `backend/src/main/java/com/ticketing/rag/ingestion/TicketChangedEventListener.java` (listen after commit; enqueue indexing job)
-- [ ] T067 [US5] Implement `IndexingJobProcessor` in `backend/src/main/java/com/ticketing/rag/ingestion/IndexingJobProcessor.java` (poll pending jobs; re-embed when text_hash changes; metadata-only update without re-embed; upsert to PgVectorStore; exponential backoff max 3 retries)
-- [ ] T068 [US5] Configure Spring AI `PgVectorStore` and `EmbeddingModel` in `backend/src/main/java/com/ticketing/shared/config/VectorStoreConfig.java` (table knowledge_embeddings, 1536 dimensions, metadata keys: knowledgeDocumentId, ticketId, displayId, contentType, status, priority, category)
-- [ ] T069 [US5] Implement `RetrievalService` in `backend/src/main/java/com/ticketing/rag/retrieval/RetrievalService.java` (embed query; similaritySearch with configurable top-k from RagProperties)
-- [ ] T070 [US5] Implement `GroundingGuard` in `backend/src/main/java/com/ticketing/rag/retrieval/GroundingGuard.java` (filter results below similarity-threshold; return empty list when no hits pass)
-- [ ] T071 [US5] Implement `AssistantService` in `backend/src/main/java/com/ticketing/rag/service/AssistantService.java` (single retrieve-then-answer flow; no LLM call when grounding guard returns empty; constrained prompt using retrieved context only; build sources array with displayId as ticketId + contentType per contracts/rag-api.yaml; fixed no-match message from RagProperties)
-- [ ] T072 [US5] Implement `AssistantController` in `backend/src/main/java/com/ticketing/rag/api/AssistantController.java` (`POST /api/v1/assistant/ask`, `GET /api/v1/assistant/index-status/{ticketId}` per contracts/rag-api.yaml; 503 on embedding/LLM failure)
-- [ ] T073 [P] [US5] Create assistant DTO records in `backend/src/main/java/com/ticketing/rag/api/` (`AskRequest` question minLength 3 maxLength 2000, `AskResponse`, `Source`, `IndexStatusResponse`)
-- [ ] T074 [P] [US5] Create assistant API client in `frontend/src/features/assistant/api/assistantApi.ts` (askQuestion, getIndexStatus)
-- [ ] T075 [P] [US5] Create `QuestionForm` component in `frontend/src/features/assistant/components/QuestionForm.tsx`
-- [ ] T076 [P] [US5] Create `AnswerPanel` component in `frontend/src/features/assistant/components/AnswerPanel.tsx` (render answer text; hide source panel when sources empty)
-- [ ] T077 [P] [US5] Create `SourceList` component in `frontend/src/features/assistant/components/SourceList.tsx` (clickable links to `/tickets/{id}` with contentType badge)
-- [ ] T078 [US5] Create `AssistantPage` in `frontend/src/features/assistant/pages/AssistantPage.tsx` (question form, loading state, answer + sources, error banner on failure)
-- [ ] T079 [US5] Wire `TicketChangedEvent` publishing in `TicketService` and `CommentService` for all mutation paths (create, update, comment add, status change) to trigger indexing pipeline
+- [X] T061 [P] [US5] Create JPA `KnowledgeDocument` entity in `backend/src/main/java/com/ticketing/rag/domain/KnowledgeDocument.java` (fields per data-model.md; `content_type` ENUM DESCRIPTION/COMMENT/RESOLUTION; `text_hash` SHA-256 VARCHAR(64); unique on ticket_id + content_type + source_ref_id)
+- [X] T062 [P] [US5] Create JPA `IndexingJob` entity in `backend/src/main/java/com/ticketing/rag/domain/IndexingJob.java` (trigger ENUM, status PENDING/PROCESSING/COMPLETED/FAILED, attempts default 0, max 3 retries)
+- [X] T063 [US5] Create `KnowledgeDocumentRepository` and `IndexingJobRepository` in `backend/src/main/java/com/ticketing/rag/repository/`
+- [X] T064 [US5] Implement `KnowledgeDocumentBuilder` in `backend/src/main/java/com/ticketing/rag/ingestion/KnowledgeDocumentBuilder.java` (canonical text format per data-model.md; one unit per description, each comment, resolution when present; compute text_hash)
+- [X] T065 [US5] Implement `IndexingJobEnqueuer` in `backend/src/main/java/com/ticketing/rag/ingestion/IndexingJobEnqueuer.java` (create PENDING job in same transaction as ticket mutation via outbox pattern)
+- [X] T066 [US5] Create `TicketChangedEventListener` in `backend/src/main/java/com/ticketing/rag/ingestion/TicketChangedEventListener.java` (listen after commit; enqueue indexing job)
+- [X] T067 [US5] Implement `IndexingJobProcessor` in `backend/src/main/java/com/ticketing/rag/ingestion/IndexingJobProcessor.java` (poll pending jobs; re-embed when text_hash changes; metadata-only update without re-embed; upsert to PgVectorStore; exponential backoff max 3 retries)
+- [X] T068 [US5] Configure Spring AI `PgVectorStore` and `EmbeddingModel` in `backend/src/main/java/com/ticketing/shared/config/VectorStoreConfig.java` (table knowledge_embeddings, 1536 dimensions, metadata keys: knowledgeDocumentId, ticketId, displayId, contentType, status, priority, category)
+- [X] T069 [US5] Implement `RetrievalService` in `backend/src/main/java/com/ticketing/rag/retrieval/RetrievalService.java` (embed query; similaritySearch with configurable top-k from RagProperties)
+- [X] T070 [US5] Implement `GroundingGuard` in `backend/src/main/java/com/ticketing/rag/retrieval/GroundingGuard.java` (filter results below similarity-threshold; return empty list when no hits pass)
+- [X] T071 [US5] Implement `AssistantService` in `backend/src/main/java/com/ticketing/rag/service/AssistantService.java` (single retrieve-then-answer flow; no LLM call when grounding guard returns empty; constrained prompt using retrieved context only; build sources array with displayId as ticketId + contentType per contracts/rag-api.yaml; fixed no-match message from RagProperties)
+- [X] T072 [US5] Implement `AssistantController` in `backend/src/main/java/com/ticketing/rag/api/AssistantController.java` (`POST /api/v1/assistant/ask`, `GET /api/v1/assistant/index-status/{ticketId}` per contracts/rag-api.yaml; 503 on embedding/LLM failure)
+- [X] T073 [P] [US5] Create assistant DTO records in `backend/src/main/java/com/ticketing/rag/api/` (`AskRequest` question minLength 3 maxLength 2000, `AskResponse`, `Source`, `IndexStatusResponse`)
+- [X] T074 [P] [US5] Create assistant API client in `frontend/src/features/assistant/api/assistantApi.ts` (askQuestion, getIndexStatus)
+- [X] T075 [P] [US5] Create `QuestionForm` component in `frontend/src/features/assistant/components/QuestionForm.tsx`
+- [X] T076 [P] [US5] Create `AnswerPanel` component in `frontend/src/features/assistant/components/AnswerPanel.tsx` (render answer text; hide source panel when sources empty)
+- [X] T077 [P] [US5] Create `SourceList` component in `frontend/src/features/assistant/components/SourceList.tsx` (clickable links to `/tickets/{id}` with contentType badge)
+- [X] T078 [US5] Create `AssistantPage` in `frontend/src/features/assistant/pages/AssistantPage.tsx` (question form, loading state, answer + sources, error banner on failure)
+- [X] T079 [US5] Wire `TicketChangedEvent` publishing in `TicketService` and `CommentService` for all mutation paths (create, update, comment add, status change) to trigger indexing pipeline
 
 **Checkpoint**: User Story 5 complete — RAG Q&A grounded with citations; no-match honest; re-index after content changes
 
@@ -192,13 +192,13 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 **Purpose**: Documentation validation, CORS, scheduling, and production readiness
 
-- [ ] T080 [P] Enable CORS for frontend dev origin in `backend/src/main/java/com/ticketing/shared/config/WebConfig.java` (`http://localhost:5173`)
-- [ ] T081 [P] Add Spring scheduling config for `IndexingJobProcessor` poll interval in `backend/src/main/java/com/ticketing/shared/config/SchedulingConfig.java` (`app.rag.indexing.poll-interval-ms`)
-- [ ] T082 [P] Add actuator health endpoint exposure in `backend/src/main/resources/application.yml` (verify per quickstart.md)
-- [ ] T083 Create `.env.example` at repo root documenting required env vars (OPENAI_API_KEY, datasource, APP_RAG_RETRIEVAL_TOP_K, APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD)
-- [ ] T084 [P] Add navigation link to Assistant in `frontend/src/app/App.tsx` layout
-- [ ] T085 Run quickstart.md Scenarios 1–7 validation and fix any gaps found
-- [ ] T086 [P] Add README.md at repo root with setup instructions referencing quickstart.md
+- [X] T080 [P] Enable CORS for frontend dev origin in `backend/src/main/java/com/ticketing/shared/config/WebConfig.java` (`http://localhost:5173`)
+- [X] T081 [P] Add Spring scheduling config for `IndexingJobProcessor` poll interval in `backend/src/main/java/com/ticketing/shared/config/SchedulingConfig.java` (`app.rag.indexing.poll-interval-ms`)
+- [X] T082 [P] Add actuator health endpoint exposure in `backend/src/main/resources/application.yml` (verify per quickstart.md)
+- [X] T083 Create `.env.example` at repo root documenting required env vars (OPENAI_API_KEY, datasource, APP_RAG_RETRIEVAL_TOP_K, APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD)
+- [X] T084 [P] Add navigation link to Assistant in `frontend/src/app/App.tsx` layout
+- [X] T085 Run quickstart.md Scenarios 1–7 validation and fix any gaps found
+- [X] T086 [P] Add README.md at repo root with setup instructions referencing quickstart.md
 
 ---
 

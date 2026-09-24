@@ -66,17 +66,25 @@
 
 ## 5. Embedding Model
 
-**Decision**: OpenAI `text-embedding-3-small` via `spring-ai-starter-model-openai` (or configurable equivalent). Dimensions: **1536** (model default).
+**Decision**: Profile-based provider selection via Spring AI:
+
+| Profile | Provider | Model | Dimensions |
+|---------|----------|-------|------------|
+| `local` (default) | Ollama | `nomic-embed-text` | **768** |
+| `openai` | OpenAI | `text-embedding-3-small` | **1536** |
+
+Configured in `application-local.yml` / `application-openai.yml`. Vector table dimension must match the active profile (`EMBEDDING_DIMENSIONS` env var; Liquibase changeset `006-vector-dimensions-768.sql` for local).
 
 **Rationale**:
-- Spring AI first-class support; PGVector store defaults to 1536.
-- Cost-effective for support-ticket text lengths.
-- Model id externalized via `spring.ai.openai.embedding.options.model`.
+- Local dev runs without cloud API keys; Ollama has first-class Spring AI support.
+- Production can switch to OpenAI via `SPRING_PROFILES_ACTIVE=openai` without code changes.
+- Model ids externalized per profile (`spring.ai.ollama.embedding.options.model` / `spring.ai.openai.embedding.options.model`).
 
 **Alternatives considered**:
 | Model | Rejected because |
 |-------|------------------|
-| Local ONNX embeddings | Extra infra; not required for v1 |
+| OpenAI-only | Requires API key for local development |
+| Local ONNX embeddings | Extra JVM memory; Ollama covers both embed + chat in one daemon |
 | `text-embedding-3-large` | Higher cost; marginal gain on short ticket text |
 
 ## 6. Vector Store & Similarity
@@ -96,7 +104,7 @@
 
 **Defaults** (documented, overridable):
 - `top-k`: 5
-- `similarity-threshold`: 0.75
+- `similarity-threshold`: **0.70** (`local` profile) / **0.75** (`openai` profile)
 
 ## 7. Re-Index Strategy
 
@@ -133,9 +141,19 @@ Rules:
 
 ## 9. LLM for Answer Generation
 
-**Decision**: OpenAI `gpt-4o-mini` (or configurable) via Spring AI `ChatClient`.
+**Decision**: Profile-based chat model via Spring AI `ChatClient`:
 
-**Rationale**: Cost-effective for short Q&A; Spring AI ChatClient supports structured prompt templates.
+| Profile | Provider | Model |
+|---------|----------|-------|
+| `local` (default) | Ollama | `llama3.2:3b` |
+| `openai` | OpenAI | `gpt-4o-mini` |
+
+OpenAI auto-configuration is excluded on the `local` profile (and vice versa) to prevent startup failures when only one provider is configured.
+
+**Rationale**:
+- Local dev: lightweight 3B model runs on consumer hardware (~2 GB).
+- Production: `gpt-4o-mini` is cost-effective for short grounded Q&A.
+- Spring AI `ChatClient` supports structured prompt templates for both providers.
 
 ## 10. Integration Testing
 

@@ -9,29 +9,58 @@ Runnable validation scenarios. Implementation details live in `tasks.md`.
 - Java 21, Maven 3.9+
 - Node.js 20+, npm
 - Docker (Testcontainers + local PostgreSQL)
-- OpenAI API key (embedding + chat)
+- **Ollama** (local RAG — no API key required; see below)
+- OpenAI API key — **only** if using `SPRING_PROFILES_ACTIVE=openai` (staging/production)
+
+## Install Ollama (local development)
+
+```bash
+# macOS
+brew install ollama
+brew services start ollama
+
+# Pull models used by application-local.yml
+ollama pull nomic-embed-text   # embeddings (768 dimensions)
+ollama pull llama3.2:3b        # chat (~2 GB)
+```
+
+Verify:
+
+```bash
+curl -s http://localhost:11434/api/tags | jq '.models[].name'
+```
 
 ## Environment
 
+Copy `.env.example` to `.env` at the repo root (or export variables in your shell):
+
 ```bash
-# backend/.env or export
-export OPENAI_API_KEY=sk-...
-export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/ticketing
-export SPRING_DATASOURCE_USERNAME=ticketing
-export SPRING_DATASOURCE_PASSWORD=ticketing
+# Local profile (default) — Ollama, no API key
+export SPRING_PROFILES_ACTIVE=local
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_NAME=ticketing
+export DB_USER=ticketing
+export DB_PASSWORD=ticketing
+export OLLAMA_BASE_URL=http://localhost:11434
+export EMBEDDING_DIMENSIONS=768
 export APP_RAG_RETRIEVAL_TOP_K=5
+export APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD=0.70
+```
+
+For OpenAI (staging/production):
+
+```bash
+export SPRING_PROFILES_ACTIVE=openai
+export OPENAI_API_KEY=sk-...
+export EMBEDDING_DIMENSIONS=1536
 export APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD=0.75
 ```
 
 ## Start Infrastructure
 
 ```bash
-docker run -d --name ticketing-pg \
-  -e POSTGRES_DB=ticketing \
-  -e POSTGRES_USER=ticketing \
-  -e POSTGRES_PASSWORD=ticketing \
-  -p 5432:5432 \
-  pgvector/pgvector:pg16
+docker compose up -d
 ```
 
 ## Start Backend

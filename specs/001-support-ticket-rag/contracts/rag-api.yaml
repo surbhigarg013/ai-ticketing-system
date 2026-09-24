@@ -76,14 +76,23 @@ components:
 
     Source:
       type: object
-      required: [ticketId, contentType]
+      required: [ticketId, displayId, contentTypes]
       properties:
         ticketId:
           type: string
-          description: Display id e.g. TKT-1001
+          format: uuid
+          description: Internal ticket UUID for navigation and API calls
+        displayId:
+          type: string
+          description: Human-readable ticket id e.g. TKT-1001
           example: TKT-1001
-        contentType:
-          $ref: '#/components/schemas/ContentType'
+        contentTypes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ContentType'
+          description: Which indexed units from this ticket supported the answer
+          example: [description, comment]
 
     AskResponse:
       type: object
