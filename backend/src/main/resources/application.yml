@@ -1,6 +1,8 @@
 spring:
   application:
     name: ticketing-backend
+  profiles:
+    default: local
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ticketing}
     username: ${DB_USER:ticketing}
@@ -16,19 +18,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:}
-      embedding:
-        options:
-          model: text-embedding-3-small
-      chat:
-        options:
-          model: gpt-4o-mini
     vectorstore:
       pgvector:
         initialize-schema: false
         table-name: knowledge_embeddings
-        dimensions: 1536
+        dimensions: ${EMBEDDING_DIMENSIONS:768}
         distance-type: COSINE_DISTANCE
         index-type: HNSW
 
@@ -45,7 +39,7 @@ app:
   rag:
     retrieval:
       top-k: ${APP_RAG_RETRIEVAL_TOP_K:5}
-      similarity-threshold: ${APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD:0.75}
+      similarity-threshold: ${APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD:0.50}
     no-match-message: "I could not find any relevant tickets in our history that answer this question."
     indexing:
       max-retries: 3

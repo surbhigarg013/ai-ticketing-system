@@ -1,0 +1,27 @@
+# Staging/production: OpenAI for embeddings + chat (requires OPENAI_API_KEY).
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.model.ollama.autoconfigure.OllamaApiAutoConfiguration
+      - org.springframework.ai.model.ollama.autoconfigure.OllamaChatAutoConfiguration
+      - org.springframework.ai.model.ollama.autoconfigure.OllamaEmbeddingAutoConfiguration
+  ai:
+    model:
+      chat: openai
+      embedding: openai
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      embedding:
+        options:
+          model: text-embedding-3-small
+      chat:
+        options:
+          model: gpt-4o-mini
+    vectorstore:
+      pgvector:
+        dimensions: 1536
+
+app:
+  rag:
+    retrieval:
+      similarity-threshold: ${APP_RAG_RETRIEVAL_SIMILARITY_THRESHOLD:0.75}
