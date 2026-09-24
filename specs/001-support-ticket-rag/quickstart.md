@@ -187,7 +187,7 @@ curl -s -X POST http://localhost:8080/api/v1/assistant/ask \
   -d '{"question":"Have we seen payment failures before?"}' | jq .
 ```
 
-**Expected**: Non-empty `sources` with `ticketId` + `contentType`. Answer references payment content.
+**Expected**: Non-empty `sources` with one entry per ticket; each entry has `ticketId` (UUID), `displayId`, and non-empty `contentTypes` (e.g. `["description","comment"]`). Answer references payment content.
 
 Ask no-match question:
 

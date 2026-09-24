@@ -178,7 +178,7 @@ Not persisted in v1.
 | Field | Type | Notes |
 |-------|------|-------|
 | `answer` | string | Generated text or fixed no-match message |
-| `sources` | array | `{ ticketId, contentType }` per spec |
+| `sources` | array | One entry per ticket: `{ ticketId: UUID, displayId, contentTypes: [description|comment|resolution] }` |
 
 **No-match message** (fixed constant):
 ```text

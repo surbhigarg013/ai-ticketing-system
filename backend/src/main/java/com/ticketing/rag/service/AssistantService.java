@@ -11,15 +11,11 @@ import com.ticketing.rag.repository.KnowledgeDocumentRepository;
 import com.ticketing.rag.retrieval.GroundingGuard;
 import com.ticketing.rag.retrieval.RetrievalService;
 import com.ticketing.shared.config.RagProperties;
-import com.ticketing.shared.config.VectorStoreConfig;
 import com.ticketing.shared.exception.AiServiceUnavailableException;
 import com.ticketing.shared.exception.ResourceNotFoundException;
 import com.ticketing.ticket.repository.TicketRepository;
 import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
@@ -38,6 +34,7 @@ public class AssistantService {
 
     private final RetrievalService retrievalService;
     private final GroundingGuard groundingGuard;
+    private final RagSourceBuilder ragSourceBuilder;
     private final ChatClient chatClient;
     private final RagProperties ragProperties;
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
@@ -47,6 +44,7 @@ public class AssistantService {
     public AssistantService(
             RetrievalService retrievalService,
             GroundingGuard groundingGuard,
+            RagSourceBuilder ragSourceBuilder,
             ChatClient chatClient,
             RagProperties ragProperties,
             KnowledgeDocumentRepository knowledgeDocumentRepository,
@@ -54,6 +52,7 @@ public class AssistantService {
             TicketRepository ticketRepository) {
         this.retrievalService = retrievalService;
         this.groundingGuard = groundingGuard;
+        this.ragSourceBuilder = ragSourceBuilder;
         this.chatClient = chatClient;
         this.ragProperties = ragProperties;
         this.knowledgeDocumentRepository = knowledgeDocumentRepository;
@@ -66,11 +65,16 @@ public class AssistantService {
         List<Document> grounded = groundingGuard.filter(question, retrieved);
 
         if (grounded.isEmpty()) {
-            return new AskResponse(ragProperties.noMatchMessage(), List.of());
+            return noMatchResponse();
+        }
+
+        List<Source> sources = ragSourceBuilder.buildSources(grounded);
+        if (sources.isEmpty()) {
+            return noMatchResponse();
         }
 
         String answer = generateAnswer(question, grounded);
-        return new AskResponse(answer, buildSources(grounded));
+        return new AskResponse(answer, sources);
     }
 
     @Transactional(readOnly = true)
@@ -97,6 +101,10 @@ public class AssistantService {
         return new IndexStatusResponse(ticketId, documentStatuses, lastIndexedAt, pendingJobs);
     }
 
+    private AskResponse noMatchResponse() {
+        return new AskResponse(ragProperties.noMatchMessage(), List.of());
+    }
+
     private String generateAnswer(String question, List<Document> grounded) {
         String context = grounded.stream()
                 .map(Document::getText)
@@ -113,42 +121,5 @@ public class AssistantService {
         } catch (Exception ex) {
             throw new AiServiceUnavailableException("LLM service unavailable", ex);
         }
-    }
-
-    private List<Source> buildSources(List<Document> grounded) {
-        Map<String, TicketSourceAccumulator> byTicket = new LinkedHashMap<>();
-        for (Document document : grounded) {
-            Map<String, Object> metadata = document.getMetadata();
-            String ticketId = stringMetadata(metadata, VectorStoreConfig.META_TICKET_ID);
-            String displayId = stringMetadata(metadata, VectorStoreConfig.META_DISPLAY_ID);
-            String contentType = stringMetadata(metadata, VectorStoreConfig.META_CONTENT_TYPE);
-            if (displayId.isBlank() || contentType.isBlank()) {
-                continue;
-            }
-
-            String key = !ticketId.isBlank() ? ticketId : displayId;
-            byTicket
-                    .computeIfAbsent(key, ignored -> new TicketSourceAccumulator(ticketId, displayId))
-                    .contentTypes()
-                    .add(contentType.toLowerCase());
-        }
-
-        return byTicket.values().stream()
-                .map(accumulator -> new Source(
-                        accumulator.ticketId(),
-                        accumulator.displayId(),
-                        List.copyOf(accumulator.contentTypes())))
-                .toList();
-    }
-
-    private record TicketSourceAccumulator(String ticketId, String displayId, LinkedHashSet<String> contentTypes) {
-        TicketSourceAccumulator(String ticketId, String displayId) {
-            this(ticketId, displayId, new LinkedHashSet<>());
-        }
-    }
-
-    private static String stringMetadata(Map<String, Object> metadata, String key) {
-        Object value = metadata.get(key);
-        return value != null ? value.toString() : "";
     }
 }

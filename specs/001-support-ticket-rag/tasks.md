@@ -202,7 +202,17 @@ description: "Task list for AI-Powered Support Ticket Management feature impleme
 
 ---
 
-## Dependencies & Execution Order
+## Phase 9: Review Remediation (Post-Implementation)
+
+**Purpose**: Address code review findings and implementation-readiness spec gaps
+
+- [X] T087 Fix RAG integrity: no LLM call when sources empty; aggregate sources per ticket via `RagSourceBuilder`
+- [X] T088 Add unit tests: `RagSourceBuilderTest`, `TicketStateMachineTest`, `AssistantServiceTest`
+- [X] T089 Optimize grounding: use vector-store distance metadata; fallback scorer only when missing
+- [X] T090 Frontend: map 400 field errors to `QuestionForm`; preserve prior answer on failure; a11y improvements
+- [X] T091 Align spec/data-model/contracts/quickstart for deduped `contentTypes[]` sources and readiness gaps (FR-026/027, pagination, 503, indexing retry)
+
+---
 
 ### Phase Dependencies
 

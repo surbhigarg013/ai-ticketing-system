@@ -23,7 +23,7 @@ public class RetrievalService {
         SearchRequest request = SearchRequest.builder()
                 .query(question)
                 .topK(ragProperties.retrieval().topK())
-                .similarityThreshold(SearchRequest.SIMILARITY_THRESHOLD_ACCEPT_ALL)
+                .similarityThreshold(ragProperties.retrieval().similarityThreshold())
                 .build();
         try {
             return vectorStore.similaritySearch(request);

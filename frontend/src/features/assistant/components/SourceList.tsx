@@ -19,12 +19,16 @@ export function SourceList({ sources }: SourceListProps) {
   }
 
   return (
-    <section className="source-list">
+    <section className="source-list" aria-label="Answer sources">
       <h3>Sources</h3>
       <ul>
         {sources.map((source) => (
           <li key={source.ticketId || source.displayId}>
-            <Link to={`/tickets/${source.ticketId}`}>{source.displayId}</Link>
+            {source.ticketId ? (
+              <Link to={`/tickets/${source.ticketId}`}>{source.displayId}</Link>
+            ) : (
+              <span>{source.displayId}</span>
+            )}
             <span className="source-reasons">Matched: {formatReasons(source.contentTypes)}</span>
             <span className="source-badges">
               {source.contentTypes.map((contentType) => (

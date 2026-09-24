@@ -1,3 +1,11 @@
-export function LoadingSpinner() {
-  return <div className="loading-spinner" aria-label="Loading">Loading…</div>;
+interface LoadingSpinnerProps {
+  label?: string;
+}
+
+export function LoadingSpinner({ label = 'Loading' }: LoadingSpinnerProps) {
+  return (
+    <div className="loading-spinner" role="status" aria-live="polite" aria-label={label}>
+      {label}…
+    </div>
+  );
 }

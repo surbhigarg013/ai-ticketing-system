@@ -26,7 +26,20 @@ Build a support ticket management system with server-enforced lifecycle state ma
 
 **Target Platform**: Linux/macOS server + browser SPA
 
-**Performance Goals**: Ticket CRUD p95 < 200ms; assistant Q&A p95 < 5s (embedding + retrieval + LLM); indexing job completion < 30s per ticket mutation
+**Performance Goals** (supplementary NFRs — traceable to spec success criteria):
+
+| Target | Plan NFR | Spec linkage |
+|--------|----------|--------------|
+| Ticket CRUD p95 < 200ms | Performance Goals | SC-001, SC-008 (agent workflow time) |
+| Assistant Q&A p95 < 5s | Performance Goals | SC-001 (indirect); operational SLA |
+| Indexing completion < 30s per mutation | Performance Goals | SC-007 (one indexing cycle bound) |
+| ≥ 85% line coverage (non-POJO) | Coverage Target | SC-009, FR-025, Constitution §III |
+
+**Indexing failure handling**: Jobs retry with exponential backoff up to `app.rag.indexing.max-retries` (default 3). Ticket commits are never rolled back on indexing failure; operators use `/assistant/index-status/{ticketId}` to inspect pending/failed state (FR-027).
+
+**Assistant dependency failures**: Embedding or LLM errors return HTTP 503 problem+json; no fabricated answers (FR-026, contracts/rag-api.yaml).
+
+**Accessibility (v1)**: WCAG certification and i18n explicitly out of scope; basic semantic HTML and ARIA on loading/error states only (see spec Assumptions).
 
 **Constraints**:
 - RAG answers grounded only in retrieved ticket context
@@ -267,7 +280,7 @@ frontend/
 2. Loading state during retrieval + generation.
 3. On success:
    - Render `answer` text.
-   - Render `sources` as clickable links to `/tickets/{id}` with contentType badge.
+   - Render `sources` as clickable links to `/tickets/{ticketId}` with `contentTypes` badges and matched-reasons text.
 4. On no-match (`sources` empty): show answer text (fixed message), no source panel.
 5. On error: show problem+json detail.
 
@@ -304,7 +317,7 @@ frontend/
 
 | Case | Assert |
 |------|--------|
-| Indexed ticket, matching question | `sources` non-empty; each entry has `ticketId` + `contentType` |
+| Indexed ticket, matching question | `sources` non-empty; each entry has `ticketId`, `displayId`, and non-empty `contentTypes[]` |
 | No indexed tickets | Fixed no-match message; `sources: []` |
 | Below threshold | No-match response; no LLM call (verify with mock) |
 | Post-comment re-index | Answer includes new comment content |

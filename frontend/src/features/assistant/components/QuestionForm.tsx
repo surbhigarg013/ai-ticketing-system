@@ -3,9 +3,14 @@ import { FormEvent, useState } from 'react';
 interface QuestionFormProps {
   onSubmit: (question: string) => Promise<void>;
   disabled?: boolean;
+  fieldErrors?: Record<string, string>;
 }
 
-export function QuestionForm({ onSubmit, disabled = false }: QuestionFormProps) {
+export function QuestionForm({
+  onSubmit,
+  disabled = false,
+  fieldErrors = {},
+}: QuestionFormProps) {
   const [question, setQuestion] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [validationError, setValidationError] = useState('');
@@ -31,8 +36,11 @@ export function QuestionForm({ onSubmit, disabled = false }: QuestionFormProps) 
     }
   }
 
+  const serverQuestionError = fieldErrors.question;
+  const activeError = serverQuestionError ?? validationError;
+
   return (
-    <form onSubmit={handleSubmit} className="question-form">
+    <form onSubmit={handleSubmit} className="question-form" aria-busy={disabled || submitting}>
       <label>
         Ask a question about ticket history
         <textarea
@@ -42,9 +50,15 @@ export function QuestionForm({ onSubmit, disabled = false }: QuestionFormProps) 
           maxLength={2000}
           placeholder="e.g. Have we seen payment failures before?"
           required
+          aria-invalid={Boolean(activeError)}
+          aria-describedby={activeError ? 'question-error' : undefined}
         />
       </label>
-      {validationError && <span className="field-error">{validationError}</span>}
+      {activeError && (
+        <span id="question-error" className="field-error" role="alert">
+          {activeError}
+        </span>
+      )}
       <button type="submit" disabled={disabled || submitting || question.trim().length < 3}>
         {submitting ? 'Asking…' : 'Ask'}
       </button>
