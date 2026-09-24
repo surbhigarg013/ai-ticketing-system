@@ -1,6 +1,7 @@
 package com.ticketing.rag.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,14 +10,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ticketing.rag.api.AskResponse;
+import com.ticketing.rag.api.IndexStatusResponse;
+import com.ticketing.rag.domain.IndexingJobStatus;
+import com.ticketing.rag.domain.KnowledgeContentType;
+import com.ticketing.rag.domain.KnowledgeDocument;
 import com.ticketing.rag.repository.IndexingJobRepository;
 import com.ticketing.rag.repository.KnowledgeDocumentRepository;
 import com.ticketing.rag.retrieval.GroundingGuard;
 import com.ticketing.rag.retrieval.RetrievalService;
 import com.ticketing.shared.config.RagProperties;
+import com.ticketing.shared.exception.ResourceNotFoundException;
 import com.ticketing.ticket.repository.TicketRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -105,6 +113,43 @@ class AssistantServiceTest {
         assistantService.ask("anything");
 
         verify(chatClient, never()).prompt();
+    }
+
+    @Test
+    void getIndexStatus_throwsWhenTicketMissing() {
+        UUID ticketId = UUID.randomUUID();
+        when(ticketRepository.existsById(ticketId)).thenReturn(false);
+
+        assertThatThrownBy(() -> assistantService.getIndexStatus(ticketId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining(ticketId.toString());
+    }
+
+    @Test
+    void getIndexStatus_returnsDocumentStatusesAndPendingJobs() {
+        UUID ticketId = UUID.randomUUID();
+        Instant indexedAt = Instant.parse("2025-09-01T10:00:00Z");
+
+        KnowledgeDocument document = new KnowledgeDocument();
+        document.setContentType(KnowledgeContentType.DESCRIPTION);
+        document.setIndexedAt(indexedAt);
+        document.setTextHash("abc123");
+
+        when(ticketRepository.existsById(ticketId)).thenReturn(true);
+        when(knowledgeDocumentRepository.findByTicketId(ticketId)).thenReturn(List.of(document));
+        when(indexingJobRepository.countByTicketIdAndStatusIn(
+                        ticketId, List.of(IndexingJobStatus.PENDING, IndexingJobStatus.PROCESSING)))
+                .thenReturn(2L);
+
+        IndexStatusResponse response = assistantService.getIndexStatus(ticketId);
+
+        assertThat(response.ticketId()).isEqualTo(ticketId);
+        assertThat(response.documents()).hasSize(1);
+        assertThat(response.documents().getFirst().contentType()).isEqualTo("description");
+        assertThat(response.documents().getFirst().textHash()).isEqualTo("abc123");
+        assertThat(response.documents().getFirst().indexedAt()).isEqualTo(indexedAt);
+        assertThat(response.lastIndexedAt()).isEqualTo(indexedAt);
+        assertThat(response.pendingJobs()).isEqualTo(2);
     }
 
     private static Document document() {
